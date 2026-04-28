@@ -99,7 +99,7 @@ gitlink-cli auth login
 | 问题 | 说明 | 影响 |
 |------|------|------|
 | Issue 创建需要 `done_ratio` | 创建 Issue 时必须包含 `done_ratio: 0`，否则数据库报错 | `issue +create` 已内置处理 |
-| Issue 更新需要 `subject` | 任何 Issue 更新（包括只改状态）都必须带上 `subject` 字段 | `issue +close` 已内置处理，Raw API 需手动处理 |
+| Issue 更新需保留 `subject`/`description` | 任何 Issue 更新（包括只改状态）都应带上当前 `subject` 和 `description`，否则可能清空描述 | `issue +update`/`issue +close` 已内置处理，Raw API 需先 GET 再提交 |
 | Release 查看需要 `version_id` | `release +view` 必须用 `version_id`（从 `release +list` 获取），不能用 tag_name | tag_name 会返回 HTML 页面 |
 | Release 删除需要 `version_id` | `release +delete -i <version_id>` 正常工作 | 已验证通过 |
 | 分支操作需要 `/v1/` 前缀 | 分支的 create/delete/list 端点使用 `/v1/:owner/:repo/branches` | 已内置处理 |

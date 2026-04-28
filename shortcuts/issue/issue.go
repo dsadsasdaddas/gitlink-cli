@@ -3,9 +3,16 @@ package issue
 import (
 	"fmt"
 	"net/url"
+	"strconv"
+	"strings"
 
 	"github.com/gitlink-org/gitlink-cli/shortcuts/common"
 )
+
+type existingIssue struct {
+	Subject     string
+	Description string
+}
 
 func Shortcuts() []*common.Shortcut {
 	return []*common.Shortcut{
@@ -108,20 +115,15 @@ func Shortcuts() []*common.Shortcut {
 				if err != nil {
 					return err
 				}
-				// First fetch the issue to get current title
-				getEnv, err := ctx.CallAPI("GET", fmt.Sprintf("%s/issues/%s", ctx.RepoPath(), id), nil)
+				current, err := fetchExistingIssue(ctx, id)
 				if err != nil {
 					return err
 				}
-				issueData, ok := getEnv.Data.(map[string]interface{})
-				if !ok {
-					return fmt.Errorf("failed to parse issue data")
-				}
-				subject, _ := issueData["subject"].(string)
 
 				body := map[string]interface{}{
-					"subject":   subject,
-					"status_id": 5, // 5 = closed
+					"subject":     current.Subject,
+					"description": current.Description,
+					"status_id":   5, // 5 = closed
 				}
 				env, err := ctx.CallAPI("PUT", fmt.Sprintf("%s/issues/%s", ctx.RepoPath(), id), body)
 				if err != nil {
@@ -137,7 +139,7 @@ func Shortcuts() []*common.Shortcut {
 				{Name: "id", Short: "i", Usage: "Issue ID", Required: true},
 				{Name: "title", Short: "t", Usage: "New title"},
 				{Name: "body", Short: "b", Usage: "New description"},
-				{Name: "state", Short: "s", Usage: "New state: open, closed"},
+				{Name: "state", Short: "s", Usage: "New state: open, closed, or numeric status_id"},
 			},
 			Run: func(ctx *common.RuntimeContext) error {
 				if err := ctx.ResolveOwnerRepo(); err != nil {
@@ -147,7 +149,22 @@ func Shortcuts() []*common.Shortcut {
 				if err != nil {
 					return err
 				}
-				body := map[string]interface{}{}
+				title := ctx.Arg("title")
+				description := ctx.Arg("body")
+				state := ctx.Arg("state")
+				if title == "" && description == "" && state == "" {
+					return fmt.Errorf("at least one of --title, --body, or --state is required")
+				}
+
+				current, err := fetchExistingIssue(ctx, id)
+				if err != nil {
+					return err
+				}
+
+				body := map[string]interface{}{
+					"subject":     current.Subject,
+					"description": current.Description,
+				}
 				if t := ctx.Arg("title"); t != "" {
 					body["subject"] = t
 				}
@@ -155,7 +172,11 @@ func Shortcuts() []*common.Shortcut {
 					body["description"] = b
 				}
 				if s := ctx.Arg("state"); s != "" {
-					body["status_id"] = s
+					statusID, err := normalizeIssueStatus(s)
+					if err != nil {
+						return err
+					}
+					body["status_id"] = statusID
 				}
 				env, err := ctx.CallAPI("PUT", fmt.Sprintf("%s/issues/%s", ctx.RepoPath(), id), body)
 				if err != nil {
@@ -193,5 +214,39 @@ func Shortcuts() []*common.Shortcut {
 				return ctx.Output(env)
 			},
 		},
+	}
+}
+
+func fetchExistingIssue(ctx *common.RuntimeContext, id string) (*existingIssue, error) {
+	getEnv, err := ctx.CallAPI("GET", fmt.Sprintf("%s/issues/%s", ctx.RepoPath(), id), nil)
+	if err != nil {
+		return nil, err
+	}
+	issueData, ok := getEnv.Data.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("failed to parse issue data")
+	}
+	subject, _ := issueData["subject"].(string)
+	if subject == "" {
+		return nil, fmt.Errorf("failed to parse issue subject")
+	}
+	description, _ := issueData["description"].(string)
+	return &existingIssue{
+		Subject:     subject,
+		Description: description,
+	}, nil
+}
+
+func normalizeIssueStatus(state string) (interface{}, error) {
+	switch strings.ToLower(strings.TrimSpace(state)) {
+	case "open":
+		return 1, nil
+	case "closed":
+		return 5, nil
+	default:
+		if id, err := strconv.Atoi(state); err == nil {
+			return id, nil
+		}
+		return nil, fmt.Errorf("invalid --state %q: use open, closed, or a numeric status_id", state)
 	}
 }

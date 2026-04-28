@@ -129,3 +129,4 @@ gitlink-cli api GET /:owner/:repo/pulls/get_branches
 - `pr +diff` 实际调用 `/pulls/:id/files` 端点，返回变更文件列表和 diff 内容
 - `pr +list` 的 `--state` 参数（open/merged/closed）仅影响统计计数，API 返回的列表可能包含所有状态的 PR
 - PR 状态值：`pull_request_status` 0=open, 1=merged, 2=closed
+- 关联已有 Issue 时，把 Issue 编号或 URL 写入 PR `--body`，或使用 `issue +comment` 留痕；不要用 Raw API 对 Issue 做不完整更新，否则可能清空 Issue 描述
