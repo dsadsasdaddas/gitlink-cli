@@ -109,7 +109,8 @@ skills/
 ├── gitlink-pm/                        # 项目管理
 │   └── SKILL.md                       # PM 操作指南
 └── gitlink-workflow/                  # AI 自动化工作流
-    └── SKILL.md                       # 工作流模板（Issue 分类、PR Review、Release Notes）
+    ├── SKILL.md                       # 工作流模板（Issue 分类、PR Review、Release Notes）
+    └── references/                    # 工作流详细参考（含安全批量 Issue 维护）
 ```
 
 ---
@@ -136,7 +137,7 @@ skills/
 | **gitlink-org** | 组织管理 | `org +list`, `org +info`, `org +members` |
 | **gitlink-ci** | CI/CD | `ci +builds`, `ci +logs` |
 | **gitlink-pm** | 项目管理 | 通过 Raw API 访问 |
-| **gitlink-workflow** | AI 工作流 | Issue 分类、PR Review、Release Notes |
+| **gitlink-workflow** | AI 工作流 | Issue 分类、安全批量 Issue 维护、PR Review、Release Notes |
 
 ---
 
@@ -172,6 +173,19 @@ gitlink-cli issue +close -i 123
 ```
 
 详见: [gitlink-issue/examples/issue-workflow.md](gitlink-issue/examples/issue-workflow.md)
+
+
+### 场景 2b：安全批量 Issue 维护
+
+```bash
+# Agent 必须先 dry-run，展示计划，不修改数据
+gitlink-cli issue +batch-close --owner Gitlink --repo forgeplus --numbers 101,102,103 --dry-run --format json
+
+# 用户明确确认后，才执行真实关闭
+gitlink-cli issue +batch-close --owner Gitlink --repo forgeplus --numbers 101,102,103 --format json
+```
+
+详见: [gitlink-workflow/references/safe-batch-issue-maintenance.md](gitlink-workflow/references/safe-batch-issue-maintenance.md)
 
 ### 场景 3：管理分支和发布
 

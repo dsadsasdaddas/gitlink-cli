@@ -1,7 +1,7 @@
 ---
 name: gitlink-workflow
 version: 1.0.0
-description: "AI 自动化工作流：Issue 分类、PR Review、Release Notes 生成、仓库初始化、Sprint 报告等。当用户需要 AI 自动化 GitLink 操作时触发。"
+description: "AI 自动化工作流：Issue 分类、安全批量 Issue 维护、PR Review、Release Notes 生成、仓库初始化、Sprint 报告等。当用户需要 AI 自动化 GitLink 操作时触发。"
 metadata:
   requires:
     bins: ["gitlink-cli"]
@@ -101,9 +101,29 @@ gitlink-cli pr +list --state merged --format json
 gitlink-cli api GET /:owner/:repo/activity --format json
 ```
 
+## 工作流 6：Safe Batch Issue Maintenance（安全批量 Issue 维护）
+
+**场景**：安全批量关闭 stale、duplicate 或 resolved Issues。
+
+**核心规则**：Agent 必须先执行 `--dry-run`，展示计划并等待用户明确确认后，才可以执行真实关闭。
+
+```bash
+# 1. 预览批量关闭，不修改数据
+gitlink-cli issue +batch-close --owner <owner> --repo <repo> --numbers 101,102,103 --dry-run --format json
+
+# 2. 用户确认后，执行真实关闭
+gitlink-cli issue +batch-close --owner <owner> --repo <repo> --numbers 101,102,103 --format json
+
+# CSV 输入方式
+gitlink-cli issue +batch-close --owner <owner> --repo <repo> --from issues.csv --dry-run --format json
+```
+
+详细流程见：[Safe Batch Issue Maintenance Workflow](references/safe-batch-issue-maintenance.md)。
+
 ## 最佳实践
 
 - 所有工作流命令使用 `--format json` 以便解析输出
 - 写入操作前确认用户意图
+- 批量 Issue 写操作必须先执行 `--dry-run` 并等待用户确认
 - 批量操作建议先用小范围测试
 - 保存工作流执行结果以便回溯
