@@ -74,6 +74,15 @@ gitlink-cli api POST /:owner/:repo/issues/series_update --body '{"ids":[1,2,3],"
 
 - **Issue 编号（`--number`）是网页 URL 中看到的序号**（如 `issues/4` 中的 `4`），不是数据库内部 ID
 - Issue 操作使用 v1 API（`/api/v1/`），支持按 Issue 编号查询和操作
-- **创建 Issue 时 CLI 会自动设置 `status_id: 1`（开启）和 `priority_id: 2`（正常）**
+- **创建 Issue 时 CLI 会自动设置 `status_id: 1`（新增）和 `priority_id: 2`（正常）**
 - **更新/关闭 Issue 时必须保留当前 `subject` 和 `description`**，即使只修改状态（CLI 会先读取当前 Issue 并自动带回）
 - v1 API 写操作必须使用 `access_token`（非 `token`）认证，CLI 已自动处理
+
+## Issue 状态映射（status_id）
+
+| status_id | 名称 | 说明 |
+|-----------|------|------|
+| 1 | 新增 | 新建 Issue 的默认状态 |
+| 2 | 正在解决 | 处理中 |
+| 3 | 已解决 | 已修复 |
+| 5 | 关闭 | 关闭（`+close` 命令使用此值） |
