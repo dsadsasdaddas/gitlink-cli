@@ -55,7 +55,7 @@
 | 操作 | 必需字段 | 说明 |
 |------|----------|------|
 | Issue 创建 | `done_ratio: 0` | 数据库约束 |
-| Issue 更新 | `subject` | 即使只改状态也需要 |
+| Issue 更新 | 当前 `subject` 和 `description` | 即使只改状态也应保留，避免清空描述 |
 | Release 查看 | `version_id` | 不能用 tag_name |
 
 ### 端点前缀

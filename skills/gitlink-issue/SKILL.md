@@ -70,11 +70,11 @@ gitlink-cli api POST /issues/:issue_id/claims
 | `--body` | `description` | Issue 描述 |
 | `--assignee` | `assigned_to_id` | 指派人 ID |
 | `--milestone` | `fixed_version_id` | 里程碑 ID |
-| `--state` | `status_id` | 状态（5=关闭） |
+| `--state` | `status_id` | 状态（open=1，closed=5，也可直接传数字 ID） |
 
 ## API 注意事项
 
 - **创建 Issue 时必须包含 `done_ratio: 0`**，否则数据库报错（CLI 已自动处理）
-- **更新/关闭 Issue 时必须包含 `subject` 字段**，即使只修改状态（CLI 已自动处理）
-- 使用 Raw API 操作 Issue 时需手动添加这些字段
+- **更新/关闭 Issue 时必须保留当前 `subject` 和 `description`**，即使只修改状态（CLI 会先读取当前 Issue 并自动带回）
+- 使用 Raw API 操作 Issue 时需先 `GET issue`，再把当前 `subject`、`description` 与要修改的字段一起提交，避免清空描述
 - Issue 评论路径为 `/issues/:id/journals`（不带 owner/repo 前缀）

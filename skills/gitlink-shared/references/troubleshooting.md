@@ -65,18 +65,19 @@ gitlink-cli api POST /:owner/:repo/issues --body '{
 }'
 ```
 
-### Q: Issue 关闭失败 - "验证失败: 标题不能为空"
+### Q: Issue 关闭失败 - "验证失败: 标题不能为空" 或描述被清空
 
-**原因**: 更新 Issue 时缺少 `subject` 字段
+**原因**: 更新 Issue 时缺少当前 `subject`，或没有保留当前 `description`
 
 **解决**:
 ```bash
 # 使用 issue +close shortcut（已自动处理）
 gitlink-cli issue +close -i 123
 
-# 或使用 Raw API 时添加 subject
+# 或使用 Raw API 时先 GET 当前 Issue，再添加 subject 和 description
 gitlink-cli api PUT /:owner/:repo/issues/123 --body '{
   "subject": "当前标题",
+  "description": "当前描述",
   "status_id": 5
 }'
 ```

@@ -2,7 +2,7 @@
 
 > **前置条件：** 先阅读 [`../gitlink-shared/SKILL.md`](../../gitlink-shared/SKILL.md) 了解认证、全局参数和安全规则。
 
-Close an issue. Automatically fetches the current issue subject and sets `status_id=5` (closed).
+Close an issue. Automatically fetches the current issue subject and description, then sets `status_id=5` (closed) without clearing the description.
 
 ## 命令
 
@@ -25,14 +25,14 @@ gitlink-cli issue +close -i 42
 
 The command performs two API calls:
 
-1. **Fetch** the issue to get the current `subject`:
+1. **Fetch** the issue to get the current `subject` and `description`:
    ```
    GET /{owner}/{repo}/issues/{id}
    ```
-2. **Update** the issue with `status_id=5`:
+2. **Update** the issue with `status_id=5`, preserving the current description:
    ```
    PUT /{owner}/{repo}/issues/{id}
-   Body: { "subject": <current subject>, "status_id": 5 }
+   Body: { "subject": <current subject>, "description": <current description>, "status_id": 5 }
    ```
 
 ## Workflow
