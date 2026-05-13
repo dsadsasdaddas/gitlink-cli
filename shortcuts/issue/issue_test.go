@@ -131,6 +131,64 @@ func TestBatchClosePreservesCurrentDescription(t *testing.T) {
 	assertEqual(t, updatePayload["status_id"], float64(5))
 }
 
+func TestBatchCommentPostsNotesToEachIssue(t *testing.T) {
+	posted := map[string]string{}
+	server := newIssueTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == "POST" && r.URL.Path == "/v1/owner/repo/issues/42/journals.json":
+			posted["42"] = decodeJSON(t, r)["notes"].(string)
+			writeJSON(t, w, map[string]interface{}{"status": 0, "message": "success"})
+		case r.Method == "POST" && r.URL.Path == "/v1/owner/repo/issues/43/journals.json":
+			posted["43"] = decodeJSON(t, r)["notes"].(string)
+			writeJSON(t, w, map[string]interface{}{"status": 0, "message": "success"})
+		default:
+			t.Fatalf("unexpected request: %s %s", r.Method, r.URL.Path)
+		}
+	})
+	defer server.Close()
+
+	err := runIssueShortcut(t, server, "batch-comment", map[string]string{
+		"numbers": "42,43",
+		"body":    "stale issue reminder",
+	})
+	if err != nil {
+		t.Fatalf("batch-comment shortcut failed: %v", err)
+	}
+
+	assertEqual(t, posted["42"], "stale issue reminder")
+	assertEqual(t, posted["43"], "stale issue reminder")
+}
+
+func TestBatchCommentDryRunDoesNotPost(t *testing.T) {
+	server := newIssueTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		t.Fatalf("dry-run should not call API, got: %s %s", r.Method, r.URL.Path)
+	})
+	defer server.Close()
+
+	err := runIssueShortcut(t, server, "batch-comment", map[string]string{
+		"numbers": "42,43",
+		"body":    "stale issue reminder",
+		"dry-run": "true",
+	})
+	if err != nil {
+		t.Fatalf("batch-comment dry-run failed: %v", err)
+	}
+}
+
+func TestBatchCommentRequiresBody(t *testing.T) {
+	server := newIssueTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		t.Fatalf("missing body should not call API, got: %s %s", r.Method, r.URL.Path)
+	})
+	defer server.Close()
+
+	err := runIssueShortcut(t, server, "batch-comment", map[string]string{
+		"numbers": "42",
+	})
+	if err == nil {
+		t.Fatal("batch-comment without body expected an error")
+	}
+}
+
 func runIssueShortcut(t *testing.T, server *httptest.Server, name string, args map[string]string) error {
 	t.Helper()
 	shortcut := findIssueShortcut(t, name)

@@ -165,10 +165,16 @@ gitlink-cli issue +list --owner Gitlink --repo forgeplus
 gitlink-cli issue +create --owner Gitlink --repo forgeplus -t "Bug: 登录失败" -b "复现步骤..."
 
 # 查看 Issue
-gitlink-cli issue +view --owner Gitlink --repo forgeplus -i 123
+gitlink-cli issue +view --owner Gitlink --repo forgeplus -n 123
 
 # 关闭 Issue
-gitlink-cli issue +close --owner Gitlink --repo forgeplus -i 123
+gitlink-cli issue +close --owner Gitlink --repo forgeplus -n 123
+
+# 预览批量评论，不修改数据
+gitlink-cli issue +batch-comment --owner Gitlink --repo forgeplus --numbers 123,124 -b "请确认该 Issue 是否仍需处理。" --dry-run
+
+# 从 CSV 文件批量添加评论
+gitlink-cli issue +batch-comment --owner Gitlink --repo forgeplus --from issues.csv -b "该 Issue 长期无更新，如仍需处理请回复。"
 
 # 预览批量关闭，不修改数据
 gitlink-cli issue +batch-close --owner Gitlink --repo forgeplus --numbers 123,124 --dry-run
@@ -177,7 +183,7 @@ gitlink-cli issue +batch-close --owner Gitlink --repo forgeplus --numbers 123,12
 gitlink-cli issue +batch-close --owner Gitlink --repo forgeplus --from issues.csv
 
 # 添加评论
-gitlink-cli issue +comment --owner Gitlink --repo forgeplus -i 123 -b "已修复"
+gitlink-cli issue +comment --owner Gitlink --repo forgeplus -n 123 -b "已修复"
 ```
 
 ### Pull Request

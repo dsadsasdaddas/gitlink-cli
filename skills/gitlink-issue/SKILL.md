@@ -1,7 +1,7 @@
 ---
 name: gitlink-issue
 version: 2.0.0
-description: "Issue 管理：创建、查看、更新、关闭/批量关闭 Issue，添加评论。当用户需要操作 GitLink Issue 时触发。"
+description: "Issue 管理：创建、查看、更新、评论/批量评论、关闭/批量关闭 Issue。当用户需要操作 GitLink Issue 时触发。"
 metadata:
   requires:
     bins: ["gitlink-cli"]
@@ -25,8 +25,9 @@ metadata:
 | `issue +view` | Issue 详情 | 否（公开项目） |
 | `issue +update` | 更新 Issue | 是 |
 | `issue +close` | 关闭 Issue | 是 |
-| `issue +batch-close` | 批量关闭 Issue，支持 `--dry-run` 预览 | 是（dry-run 不写入） |
 | `issue +comment` | 添加评论 | 是 |
+| `issue +batch-comment` | 批量添加评论，支持 `--dry-run` 预览 | 是（dry-run 不写入） |
+| `issue +batch-close` | 批量关闭 Issue，支持 `--dry-run` 预览 | 是（dry-run 不写入） |
 
 ## 使用示例
 
@@ -45,6 +46,12 @@ gitlink-cli issue +update --number 4 --title "新标题" --body "更新描述"
 
 # 关闭 Issue
 gitlink-cli issue +close --number 4
+
+# 预览批量评论 Issue，不修改数据
+gitlink-cli issue +batch-comment --owner myuser --repo myrepo --numbers 123,124 --body "请确认该 Issue 是否仍需处理。" --dry-run
+
+# 从 CSV 文件批量添加评论
+gitlink-cli issue +batch-comment --owner myuser --repo myrepo --from issues.csv --body "该 Issue 长期无更新，如仍需处理请回复。"
 
 # 预览批量关闭 Issue，不修改数据
 gitlink-cli issue +batch-close --owner myuser --repo myrepo --numbers 123,124 --dry-run

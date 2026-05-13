@@ -12,20 +12,20 @@ import (
 
 const closedIssueStatusID = 5
 
-type batchCloseResult struct {
+type batchOperationResult struct {
 	Number string `json:"number" yaml:"number"`
 	Action string `json:"action" yaml:"action"`
 	Status string `json:"status" yaml:"status"`
 	Error  string `json:"error,omitempty" yaml:"error,omitempty"`
 }
 
-type batchCloseSummary struct {
-	Repository string             `json:"repository" yaml:"repository"`
-	DryRun     bool               `json:"dry_run" yaml:"dry_run"`
-	Total      int                `json:"total" yaml:"total"`
-	Succeeded  int                `json:"succeeded" yaml:"succeeded"`
-	Failed     int                `json:"failed" yaml:"failed"`
-	Results    []batchCloseResult `json:"results" yaml:"results"`
+type batchOperationSummary struct {
+	Repository string                 `json:"repository" yaml:"repository"`
+	DryRun     bool                   `json:"dry_run" yaml:"dry_run"`
+	Total      int                    `json:"total" yaml:"total"`
+	Succeeded  int                    `json:"succeeded" yaml:"succeeded"`
+	Failed     int                    `json:"failed" yaml:"failed"`
+	Results    []batchOperationResult `json:"results" yaml:"results"`
 }
 
 func newBatchCloseShortcut() *common.Shortcut {
@@ -55,15 +55,15 @@ func runBatchClose(ctx *common.RuntimeContext) error {
 	}
 
 	dryRun := parseBool(ctx.Arg("dry-run"))
-	summary := batchCloseSummary{
+	summary := batchOperationSummary{
 		Repository: fmt.Sprintf("%s/%s", ctx.Owner, ctx.Repo),
 		DryRun:     dryRun,
 		Total:      len(numbers),
-		Results:    make([]batchCloseResult, 0, len(numbers)),
+		Results:    make([]batchOperationResult, 0, len(numbers)),
 	}
 
 	for _, number := range numbers {
-		result := batchCloseResult{Number: number, Action: "close"}
+		result := batchOperationResult{Number: number, Action: "close"}
 		if dryRun {
 			result.Status = "planned"
 			summary.Succeeded++
@@ -104,6 +104,85 @@ func closeIssue(ctx *common.RuntimeContext, number string) error {
 	}
 	if _, err := ctx.CallAPI("PATCH", fmt.Sprintf("%s/issues/%s", v1RepoPath(ctx), number), body); err != nil {
 		return fmt.Errorf("close issue: %w", err)
+	}
+	return nil
+}
+
+func newBatchCommentShortcut() *common.Shortcut {
+	return &common.Shortcut{
+		Name:        "batch-comment",
+		Description: "Add a comment to multiple issues by issue numbers or a CSV file",
+		Flags: []common.Flag{
+			{Name: "numbers", Short: "n", Usage: "Comma-separated issue numbers from the web URL, for example: 1,2,3"},
+			{Name: "from", Usage: "Read issue numbers from a CSV file. Supports a number/issue_number/project_issues_index column or first column without header"},
+			{Name: "body", Short: "b", Usage: "Comment body", Required: true},
+			{Name: "dry-run", Usage: "Preview the issues that would be commented without changing them", Bool: true, Default: "false"},
+		},
+		Run: runBatchComment,
+	}
+}
+
+func runBatchComment(ctx *common.RuntimeContext) error {
+	if err := ctx.ResolveOwnerRepo(); err != nil {
+		return err
+	}
+
+	body, err := ctx.RequireArg("body")
+	if err != nil {
+		return err
+	}
+
+	numbers, err := collectIssueNumbers(ctx.Arg("numbers"), ctx.Arg("from"))
+	if err != nil {
+		return err
+	}
+	if len(numbers) == 0 {
+		return fmt.Errorf("no issue numbers provided; use --numbers 1,2,3 or --from issues.csv")
+	}
+
+	dryRun := parseBool(ctx.Arg("dry-run"))
+	summary := batchOperationSummary{
+		Repository: fmt.Sprintf("%s/%s", ctx.Owner, ctx.Repo),
+		DryRun:     dryRun,
+		Total:      len(numbers),
+		Results:    make([]batchOperationResult, 0, len(numbers)),
+	}
+
+	for _, number := range numbers {
+		result := batchOperationResult{Number: number, Action: "comment"}
+		if dryRun {
+			result.Status = "planned"
+			summary.Succeeded++
+			summary.Results = append(summary.Results, result)
+			continue
+		}
+
+		if err := commentIssue(ctx, number, body); err != nil {
+			result.Status = "failed"
+			result.Error = err.Error()
+			summary.Failed++
+		} else {
+			result.Status = "commented"
+			summary.Succeeded++
+		}
+		summary.Results = append(summary.Results, result)
+	}
+
+	if err := ctx.OutputData(summary); err != nil {
+		return err
+	}
+	if summary.Failed > 0 {
+		return fmt.Errorf("%d of %d issue(s) failed to comment", summary.Failed, summary.Total)
+	}
+	return nil
+}
+
+func commentIssue(ctx *common.RuntimeContext, number, body string) error {
+	payload := map[string]interface{}{
+		"notes": body,
+	}
+	if _, err := ctx.CallAPI("POST", fmt.Sprintf("%s/issues/%s/journals", v1RepoPath(ctx), number), payload); err != nil {
+		return fmt.Errorf("comment issue: %w", err)
 	}
 	return nil
 }

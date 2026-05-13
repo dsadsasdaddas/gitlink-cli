@@ -122,7 +122,7 @@ skills/
 |-------|------|----------|
 | **gitlink-shared** | 认证、全局参数、API 参考、安全规则、分支约定 | `auth login`, `auth status` |
 | **gitlink-repo** | 仓库管理 | `repo +list`, `repo +create`, `repo +info`, `repo +fork` |
-| **gitlink-issue** | Issue 管理 | `issue +create`, `issue +list`, `issue +view`, `issue +close`, `issue +batch-close` |
+| **gitlink-issue** | Issue 管理 | `issue +create`, `issue +list`, `issue +view`, `issue +close`, `issue +batch-comment`, `issue +batch-close` |
 | **gitlink-pr** | Pull Request | `pr +list`, `pr +create`, `pr +view`, `pr +merge`, `pr +review` |
 | **gitlink-branch** | 分支管理 | `branch +list`, `branch +create`, `branch +protect` |
 | **gitlink-release** | 版本发布 | `release +list`, `release +create`, `release +view` |
@@ -162,13 +162,16 @@ gitlink-cli repo +info --owner wbtiger --repo gitlink-cli
 gitlink-cli issue +create -t "Bug: 登录失败" -b "复现步骤..."
 
 # 查看 Issue
-gitlink-cli issue +view -i 123
+gitlink-cli issue +view -n 123
 
 # 添加评论
-gitlink-cli issue +comment -i 123 -b "已修复"
+gitlink-cli issue +comment -n 123 -b "已修复"
 
 # 关闭 Issue
-gitlink-cli issue +close -i 123
+gitlink-cli issue +close -n 123
+
+# 预览批量评论 Issue
+gitlink-cli issue +batch-comment --numbers 123,124 -b "请确认该 Issue 是否仍需处理。" --dry-run
 
 # 预览批量关闭 Issue
 gitlink-cli issue +batch-close --numbers 123,124 --dry-run

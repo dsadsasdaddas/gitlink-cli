@@ -165,10 +165,16 @@ gitlink-cli issue +list --owner Gitlink --repo forgeplus
 gitlink-cli issue +create --owner Gitlink --repo forgeplus -t "Bug: Login failed" -b "Steps to reproduce..."
 
 # View an issue
-gitlink-cli issue +view --owner Gitlink --repo forgeplus -i 123
+gitlink-cli issue +view --owner Gitlink --repo forgeplus -n 123
 
 # Close an issue
-gitlink-cli issue +close --owner Gitlink --repo forgeplus -i 123
+gitlink-cli issue +close --owner Gitlink --repo forgeplus -n 123
+
+# Preview batch comment without changing data
+gitlink-cli issue +batch-comment --owner Gitlink --repo forgeplus --numbers 123,124 -b "Please confirm whether this issue is still relevant." --dry-run
+
+# Batch add a comment before closing stale issues
+gitlink-cli issue +batch-comment --owner Gitlink --repo forgeplus --from issues.csv -b "This issue is inactive. Please reply if it is still relevant."
 
 # Preview batch close without changing data
 gitlink-cli issue +batch-close --owner Gitlink --repo forgeplus --numbers 123,124 --dry-run
@@ -177,7 +183,7 @@ gitlink-cli issue +batch-close --owner Gitlink --repo forgeplus --numbers 123,12
 gitlink-cli issue +batch-close --owner Gitlink --repo forgeplus --from issues.csv
 
 # Add a comment
-gitlink-cli issue +comment --owner Gitlink --repo forgeplus -i 123 -b "Fixed"
+gitlink-cli issue +comment --owner Gitlink --repo forgeplus -n 123 -b "Fixed"
 ```
 
 ### Pull Requests
