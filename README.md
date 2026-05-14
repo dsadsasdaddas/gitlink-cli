@@ -33,6 +33,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 | 🏷️ Release | Create, view, delete releases |
 | 🏢 Org | Manage organizations, members, teams |
 | 🔧 CI | View builds, logs, CI/CD operations |
+| 🔗 Webhook | List, create, update, test, and delete repository webhooks |
 | 🔍 Search | Search repositories, users |
 | 👤 User | View user profiles and info |
 | 📋 PM | Sprint management, kanban boards, weekly reports |
@@ -235,6 +236,30 @@ gitlink-cli ci +log --owner Gitlink --repo forgeplus -i <build_id>
 gitlink-cli ci +restart --owner Gitlink --repo forgeplus -i <build_id>
 ```
 
+### Webhook Management
+
+```bash
+# List repository webhooks
+gitlink-cli webhook +list --owner Gitlink --repo forgeplus
+
+# Create a webhook for push and issue events
+gitlink-cli webhook +create --owner Gitlink --repo forgeplus \
+  --url https://example.com/gitlink-hook \
+  --events push,issues_only
+
+# Update a webhook while preserving unspecified fields when available
+gitlink-cli webhook +update --owner Gitlink --repo forgeplus -i 123 \
+  --url https://example.com/new-hook \
+  --events push,issue_comment
+
+# Trigger a test delivery and inspect delivery tasks
+gitlink-cli webhook +test --owner Gitlink --repo forgeplus -i 123
+gitlink-cli webhook +tasks --owner Gitlink --repo forgeplus -i 123
+
+# Delete a webhook
+gitlink-cli webhook +delete --owner Gitlink --repo forgeplus -i 123
+```
+
 ### Search
 
 ```bash
@@ -306,6 +331,7 @@ See [skills/README.md](skills/README.md) for details.
 | `gitlink-branch` | Branch management (create, delete, list, protect, unprotect) |
 | `gitlink-release` | Release management (create, view, delete, etc.) |
 | `gitlink-ci` | CI/CD operations (builds, logs, etc.) |
+| `gitlink-webhook` | Webhook management (list, create, update, test, delete, etc.) |
 | `gitlink-search` | Search (repositories, users, etc.) |
 | `gitlink-org` | Organization management (members, teams, etc.) |
 | `gitlink-user` | User management (profile info, etc.) |
@@ -337,6 +363,7 @@ gitlink-cli/
 │   ├── release/              # Release shortcuts
 │   ├── org/                  # Organization shortcuts
 │   ├── ci/                   # CI shortcuts
+│   ├── webhook/              # Webhook shortcuts
 │   ├── search/               # Search shortcuts
 │   ├── user/                 # User shortcuts
 │   └── register.go           # Registration entry point

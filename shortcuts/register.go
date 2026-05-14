@@ -13,6 +13,7 @@ import (
 	"github.com/gitlink-org/gitlink-cli/shortcuts/repo"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/search"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/user"
+	"github.com/gitlink-org/gitlink-cli/shortcuts/webhook"
 )
 
 // RegisterAll mounts all shortcut groups onto the root command.
@@ -25,6 +26,7 @@ func RegisterAll(root *cobra.Command) {
 		"branch":  branch.Shortcuts(),
 		"org":     org.Shortcuts(),
 		"user":    user.Shortcuts(),
+		"webhook": webhook.Shortcuts(),
 		"search":  search.Shortcuts(),
 		"ci":      ci.Shortcuts(),
 	}
@@ -37,6 +39,7 @@ func RegisterAll(root *cobra.Command) {
 		"branch":  "Branch operations",
 		"org":     "Organization operations",
 		"user":    "User operations",
+		"webhook": "Webhook operations",
 		"search":  "Search operations",
 		"ci":      "CI/CD operations",
 	}

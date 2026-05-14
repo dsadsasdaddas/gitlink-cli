@@ -106,6 +106,8 @@ skills/
 │   ├── SKILL.md                       # CI 操作指南
 │   └── examples/
 │       └── ci-workflow.md             # CI 工作流
+├── gitlink-webhook/                   # Webhook 配置
+│   └── SKILL.md                       # Webhook 操作指南
 ├── gitlink-pm/                        # 项目管理
 │   └── SKILL.md                       # PM 操作指南
 └── gitlink-workflow/                  # AI 自动化工作流
@@ -135,6 +137,7 @@ skills/
 | **gitlink-user** | 用户管理 | `user +me`, `user +info` |
 | **gitlink-org** | 组织管理 | `org +list`, `org +info`, `org +members` |
 | **gitlink-ci** | CI/CD | `ci +builds`, `ci +logs` |
+| **gitlink-webhook** | Webhook 配置 | `webhook +list`, `webhook +create`, `webhook +test` |
 | **gitlink-pm** | 项目管理 | 通过 Raw API 访问 |
 | **gitlink-workflow** | AI 工作流 | Issue 分类、PR Review、Release Notes |
 
@@ -176,6 +179,7 @@ gitlink-cli issue +batch-close --numbers 123,124 --dry-run
 
 详见: [gitlink-issue/examples/issue-workflow.md](gitlink-issue/examples/issue-workflow.md)
 
+
 ### 场景 3：管理分支和发布
 
 ```bash
@@ -194,7 +198,24 @@ gitlink-cli release +view -i <version_id>
 
 详见: [gitlink-release/examples/release-workflow.md](gitlink-release/examples/release-workflow.md)
 
-### 场景 4：搜索和发现
+### 场景 4：配置仓库 Webhook
+
+```bash
+# 查看已有 Webhook
+gitlink-cli webhook +list --owner wbtiger --repo gitlink-cli
+
+# 创建推送事件 Webhook
+gitlink-cli webhook +create --owner wbtiger --repo gitlink-cli \
+  --url https://example.com/gitlink-hook \
+  --events push
+
+# 触发一次测试推送
+gitlink-cli webhook +test --owner wbtiger --repo gitlink-cli -i 123
+```
+
+详见: [gitlink-webhook/SKILL.md](gitlink-webhook/SKILL.md)
+
+### 场景 5：搜索和发现
 
 ```bash
 # 搜索仓库

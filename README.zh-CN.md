@@ -5,7 +5,7 @@
 [![Go Version](https://img.shields.io/badge/Go-1.26%2B-blue.svg)](https://golang.org)
 [![npm version](https://img.shields.io/npm/v/@gitlink-ai/cli.svg)](https://www.npmjs.com/package/@gitlink-ai/cli)
 
-[GitLink（确实开源）](https://www.gitlink.org.cn) 官方 CLI 工具 — 为人类和 AI Agent 双重设计。支持 **macOS、Linux、Windows**，覆盖仓库管理、Issue 追踪、Pull Request、CI/CD 和 AI 自动化工作流，包含 40+ 命令和 11 个 AI Agent [Skills](./skills/)。
+[GitLink（确实开源）](https://www.gitlink.org.cn) 官方 CLI 工具 — 为人类和 AI Agent 双重设计。支持 **macOS、Linux、Windows**，覆盖仓库管理、Issue 追踪、Pull Request、CI/CD 和 AI 自动化工作流，包含 40+ 命令和 12 个 AI Agent [Skills](./skills/)。
 
 **[English](./README.md)**
 
@@ -33,6 +33,7 @@
 | 🏷️ 发布 | 创建、查看、删除 Release |
 | 🏢 组织 | 管理组织、成员、团队 |
 | 🔧 CI | 查看构建、日志、CI/CD 操作 |
+| 🔗 Webhook | 列出、创建、更新、测试和删除仓库 Webhook |
 | 🔍 搜索 | 搜索仓库、用户 |
 | 👤 用户 | 查看用户资料和信息 |
 | 📋 项目管理 | Sprint 管理、看板、周报 |
@@ -215,6 +216,31 @@ gitlink-cli release +create --owner Gitlink --repo forgeplus -t v1.0.0 -n "v1.0.
 gitlink-cli release +view --owner Gitlink --repo forgeplus -i <version_id>
 ```
 
+
+### Webhook 管理
+
+```bash
+# 列出仓库 Webhook
+gitlink-cli webhook +list --owner Gitlink --repo forgeplus
+
+# 为 push 和 Issue 事件创建 Webhook
+gitlink-cli webhook +create --owner Gitlink --repo forgeplus \
+  --url https://example.com/gitlink-hook \
+  --events push,issues_only
+
+# 更新 Webhook，未指定字段会尽量保留已有配置
+gitlink-cli webhook +update --owner Gitlink --repo forgeplus -i 123 \
+  --url https://example.com/new-hook \
+  --events push,issue_comment
+
+# 触发测试推送并查看推送历史
+gitlink-cli webhook +test --owner Gitlink --repo forgeplus -i 123
+gitlink-cli webhook +tasks --owner Gitlink --repo forgeplus -i 123
+
+# 删除 Webhook
+gitlink-cli webhook +delete --owner Gitlink --repo forgeplus -i 123
+```
+
 ### 搜索
 
 ```bash
@@ -273,7 +299,7 @@ git push gitlink
 
 ## AI Agent Skills
 
-`skills/` 目录包含 11 个 Claude Code Agent Skill 文件，支持 AI 自动化操作 GitLink 平台。
+`skills/` 目录包含 12 个 Claude Code Agent Skill 文件，支持 AI 自动化操作 GitLink 平台。
 
 详见 [skills/README.md](skills/README.md)
 
@@ -286,6 +312,7 @@ git push gitlink
 | `gitlink-release` | 发布管理（创建、查看、删除等） |
 | `gitlink-org` | 组织管理（成员、团队等） |
 | `gitlink-ci` | CI/CD 操作（构建、日志等） |
+| `gitlink-webhook` | Webhook 管理（列出、创建、更新、测试、删除等） |
 | `gitlink-search` | 搜索功能（仓库、用户等） |
 | `gitlink-user` | 用户管理（个人信息等） |
 | `gitlink-pm` | 项目管理（Sprint、看板、周报等） |
@@ -316,6 +343,7 @@ gitlink-cli/
 │   ├── release/              # Release shortcuts
 │   ├── org/                  # 组织 shortcuts
 │   ├── ci/                   # CI shortcuts
+│   ├── webhook/              # Webhook shortcuts
 │   ├── search/               # 搜索 shortcuts
 │   ├── user/                 # 用户 shortcuts
 │   └── register.go           # 注册入口
