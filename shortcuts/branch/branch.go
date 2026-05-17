@@ -110,7 +110,7 @@ func Shortcuts() []*common.Shortcut {
 					return err
 				}
 				name, _ := ctx.RequireArg("name")
-				env, err := ctx.CallAPI("DELETE", fmt.Sprintf("%s/protected_branches/%s", ctx.RepoPath(), name), nil)
+				env, err := ctx.CallAPI("DELETE", fmt.Sprintf("%s/protected_branches/%s", ctx.RepoPath(), url.PathEscape(name)), nil)
 				if err != nil {
 					return err
 				}

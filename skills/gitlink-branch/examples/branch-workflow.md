@@ -65,4 +65,6 @@ gitlink-cli branch +delete --name feature/old-login
 
 - `branch +delete` 是 **Destructive Operation**，操作前请确认分支内容已合并或无保留价值
 - `branch +protect` 会对分支施加保护规则，影响后续的推送和合并流程
+- `branch +unprotect` 仅支持简单分支名（如 `main`），含 `/` 的路径需通过 Web 页面操作
+- 建议使用 `branch +list` 先查看分支状态，再执行写入/删除操作
 - 建议使用 `branch +list` 先查看分支状态，再执行写入/删除操作

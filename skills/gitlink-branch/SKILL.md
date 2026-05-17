@@ -24,6 +24,7 @@ metadata:
 | `branch +create` | 创建新分支 | ⚠️ Write Operation |
 | `branch +delete` | 删除分支 | 🔴 Destructive Operation |
 | `branch +protect` | 设置分支保护规则 | ⚠️ Write Operation |
+| `branch +unprotect` | 移除分支保护规则 | ⚠️ Write Operation |
 
 ## 参数参考
 
@@ -69,6 +70,16 @@ metadata:
 | `--format` | 否 | 输出格式：`json`/`table`/`yaml` |
 | `--debug` | 否 | 启用调试输出 |
 
+### branch +unprotect
+
+| 参数 | 必填 | 说明 |
+|------|------|------|
+| `--name, -n` | 是 | 要移除保护的分支名称 |
+| `--owner` | 是* | 仓库所有者（可从 git remote 自动推断） |
+| `--repo` | 是* | 仓库名称（可从 git remote 自动推断） |
+| `--format` | 否 | 输出格式：`json`/`table`/`yaml` |
+| `--debug` | 否 | 启用调试输出 |
+
 > *如果在 GitLink 仓库目录下执行，`--owner` 和 `--repo` 可自动推断。
 
 ## 使用示例
@@ -103,6 +114,9 @@ gitlink-cli branch +protect --name main
 
 # 指定仓库保护分支
 gitlink-cli branch +protect --name main --owner someone --repo myrepo
+
+# 移除分支保护（仅简单分支名，含 / 的路径需通过 Web 操作）
+gitlink-cli branch +unprotect --name main
 ```
 
 ## Workflow 注意事项
@@ -133,6 +147,17 @@ gitlink-cli branch +protect --name main --owner someone --repo myrepo
 1. 确认用户希望保护的分支名称。
 2. 执行 `branch +protect --name <name>`。
 3. 输出设置结果。
+
+### branch +unprotect（Write Operation）
+
+> [!CAUTION]
+> This is a **Write Operation** — confirm user intent.
+
+1. 确认用户希望移除保护的分支名称。
+2. 执行 `branch +unprotect --name <name>`。
+3. 输出结果。
+
+> **注意：** 含 `/` 的分支名（如 `feature/my-branch`）可能无法通过 CLI 解除保护（受限于 Gitea API），需通过 Web 页面操作。
 
 ## References
 
