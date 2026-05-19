@@ -5,7 +5,7 @@
 [![Go Version](https://img.shields.io/badge/Go-1.26%2B-blue.svg)](https://golang.org)
 [![npm version](https://img.shields.io/npm/v/@gitlink-ai/cli.svg)](https://www.npmjs.com/package/@gitlink-ai/cli)
 
-[GitLink（确实开源）](https://www.gitlink.org.cn) 官方 CLI 工具 — 为人类和 AI Agent 双重设计。支持 **macOS、Linux、Windows**，覆盖仓库管理、Issue 追踪、Pull Request、Webhook、CI/CD 和 AI 自动化工作流，包含 40+ 命令和 12 个 AI Agent [Skills](./skills/)。
+[GitLink（确实开源）](https://www.gitlink.org.cn) 官方 CLI 工具 — 为人类和 AI Agent 双重设计。支持 **macOS、Linux、Windows**，覆盖仓库管理、Issue 追踪、Pull Request、Webhook、CI/CD 和 AI 自动化工作流，包含 40+ 命令和 13 个 AI Agent [Skills](./skills/)。
 
 **[English](./README.md)**
 
@@ -13,7 +13,7 @@
 
 ## 为什么选择 gitlink-cli？
 
-- **Agent-Native 设计** — 开箱即用 11 个结构化 [Skills](./skills/)，兼容 Claude Code — Agent 零配置即可操作 GitLink
+- **Agent-Native 设计** — 开箱即用 13 个结构化 [Skills](./skills/)，兼容 Claude Code — Agent 零配置即可操作 GitLink
 - **广泛覆盖** — 仓库、Issue、PR、Webhook、分支、Release、CI、组织、搜索、用户 — 核心功能全覆盖
 - **AI 友好 & 优化** — 每条命令都经过真实 Agent 测试，简洁参数、智能默认值、结构化输出
 - **跨平台** — macOS、Linux、Windows (x64/arm64) 全支持，`npm` 一条命令安装
@@ -287,7 +287,7 @@ git push gitlink
 
 ## AI Agent Skills
 
-`skills/` 目录包含 11 个 Claude Code Agent Skill 文件，支持 AI 自动化操作 GitLink 平台。
+`skills/` 目录包含 13 个 Claude Code Agent Skill 文件，支持 AI 自动化操作 GitLink 平台。
 
 详见 [skills/README.md](skills/README.md)
 

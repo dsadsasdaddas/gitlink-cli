@@ -11,9 +11,9 @@ import (
 	"github.com/gitlink-org/gitlink-cli/shortcuts/pr"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/release"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/repo"
-	"github.com/gitlink-org/gitlink-cli/shortcuts/webhook"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/search"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/user"
+	"github.com/gitlink-org/gitlink-cli/shortcuts/webhook"
 )
 
 // RegisterAll mounts all shortcut groups onto the root command.

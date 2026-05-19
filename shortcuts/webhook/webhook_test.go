@@ -24,14 +24,14 @@ func TestWebhookCreateBuildsPayload(t *testing.T) {
 	defer server.Close()
 
 	err := runWebhookShortcut(t, server, "create", map[string]string{
-		"url":          "https://example.com/hook",
-		"events":       "push,create",
-		"type":         "slack",
-		"content-type": "form",
-		"http-method":  "GET",
-		"secret":       "abc123",
+		"url":           "https://example.com/hook",
+		"events":        "push,create",
+		"type":          "slack",
+		"content-type":  "form",
+		"http-method":   "GET",
+		"secret":        "abc123",
 		"branch-filter": "master",
-		"active":       "false",
+		"active":        "false",
 	})
 	if err != nil {
 		t.Fatalf("create shortcut failed: %v", err)
@@ -55,8 +55,8 @@ func TestWebhookUpdatePreservesExistingFields(t *testing.T) {
 				"id":            float64(68),
 				"type":          "gitea",
 				"url":           "https://old.example.com/hook",
-				"content_type":   "json",
-				"http_method":    "POST",
+				"content_type":  "json",
+				"http_method":   "POST",
 				"secret":        "old-secret",
 				"branch_filter": "*",
 				"events":        []interface{}{"push", "create"},
@@ -72,8 +72,8 @@ func TestWebhookUpdatePreservesExistingFields(t *testing.T) {
 	defer server.Close()
 
 	err := runWebhookShortcut(t, server, "update", map[string]string{
-		"id":    "68",
-		"url":   "https://new.example.com/hook",
+		"id":     "68",
+		"url":    "https://new.example.com/hook",
 		"active": "false",
 	})
 	if err != nil {
