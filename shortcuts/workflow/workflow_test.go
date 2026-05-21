@@ -28,6 +28,9 @@ func TestShortcutsExposesWorkflowCommands(t *testing.T) {
 	if !names["pr-summary"] {
 		t.Fatal("Shortcuts missing pr-summary")
 	}
+	if !names["repo-report"] {
+		t.Fatal("Shortcuts missing repo-report")
+	}
 }
 
 func TestRunTriageWithSingleIssueArgs(t *testing.T) {
@@ -188,6 +191,32 @@ func TestRunHealthRemoteModeUsesFetch(t *testing.T) {
 
 	if err := runHealth(ctx); err != nil {
 		t.Fatalf("runHealth returned error: %v", err)
+	}
+}
+
+func TestCollectRepoReportFromJSONFile(t *testing.T) {
+	ctx := &common.RuntimeContext{
+		Args: map[string]string{
+			"from": filepath.Join("testdata", "repo_report.json"),
+		},
+	}
+	input, notes, err := collectRepoReportInput(ctx)
+	if err != nil {
+		t.Fatalf("collectRepoReportInput returned error: %v", err)
+	}
+	if len(notes) != 0 {
+		t.Fatalf("notes = %+v, want empty", notes)
+	}
+	if input.Repository == "" || len(input.Issues) == 0 || len(input.PullRequests) == 0 {
+		t.Fatalf("input = %+v, want populated report fixture", input)
+	}
+}
+
+func TestCollectRepoReportMissingInputs(t *testing.T) {
+	ctx := &common.RuntimeContext{Args: map[string]string{}}
+	_, _, err := collectRepoReportInput(ctx)
+	if err == nil {
+		t.Fatal("collectRepoReportInput returned nil error without --from or owner/repo")
 	}
 }
 

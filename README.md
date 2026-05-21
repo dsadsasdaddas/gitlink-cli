@@ -297,8 +297,10 @@ gitlink-cli search +users -k "zhangsan"
 - `workflow +triage`
 - `workflow +health`
 - `workflow +pr-summary`
+- `workflow +repo-report`
 
 `workflow +pr-summary` defaults to `table` when `--format` is omitted.
+`workflow +repo-report` defaults to `markdown` when `--format` is omitted.
 
 Examples:
 
@@ -310,7 +312,11 @@ gitlink-cli workflow +triage --title "Install failed on Windows" --body "go inst
 gitlink-cli workflow +triage --title "Token leaked in logs" --body "The access token appears in command output" --format json
 
 # Triage with Chinese markdown output
-gitlink-cli workflow +triage --title "安装失败，无法登录" --body "运行命令时报错" --lang zh-CN --format markdown
+gitlink-cli workflow +triage \
+  --title "安装失败，无法登录" \
+  --body "运行命令时报错" \
+  --lang zh-CN \
+  --format markdown
 
 # Triage from a local JSON file
 gitlink-cli workflow +triage --from shortcuts/workflow/testdata/issue_bug.json --format json
@@ -319,13 +325,39 @@ gitlink-cli workflow +triage --from shortcuts/workflow/testdata/issue_bug.json -
 gitlink-cli workflow +triage --owner Gitlink --repo gitlink-cli --state open --limit 5 --format table
 
 # Health for a healthy repository
-gitlink-cli workflow +health --repository Gitlink/gitlink-cli --open-issues 3 --open-prs 1 --has-readme --has-license --has-contributing --agent-readiness-known --agent-readiness-score 9 --format table
+gitlink-cli workflow +health \
+  --repository Gitlink/gitlink-cli \
+  --open-issues 3 \
+  --open-prs 1 \
+  --has-readme \
+  --has-license \
+  --has-contributing \
+  --agent-readiness-known \
+  --agent-readiness-score 9 \
+  --format table
 
 # Health for a risky repository
-gitlink-cli workflow +health --repository demo/repo --open-issues 60 --stale-issues 25 --open-prs 12 --stale-prs 6 --recent-activity-known --recent-activity-days 120 --release-known=false --format json
+gitlink-cli workflow +health \
+  --repository demo/repo \
+  --open-issues 60 \
+  --stale-issues 25 \
+  --open-prs 12 \
+  --stale-prs 6 \
+  --recent-activity-known \
+  --recent-activity-days 120 \
+  --release-known=false \
+  --format json
 
 # Health with Chinese markdown output
-gitlink-cli workflow +health --repository Gitlink/gitlink-cli --open-issues 3 --open-prs 1 --has-readme --has-license --has-contributing --lang zh-CN --format markdown
+gitlink-cli workflow +health \
+  --repository Gitlink/gitlink-cli \
+  --open-issues 3 \
+  --open-prs 1 \
+  --has-readme \
+  --has-license \
+  --has-contributing \
+  --lang zh-CN \
+  --format markdown
 
 # Health by read-only GitLink fetch
 gitlink-cli workflow +health --owner Gitlink --repo gitlink-cli --stale-days 30 --format table
@@ -335,6 +367,12 @@ gitlink-cli workflow +pr-summary --owner Gitlink --repo gitlink-cli --number 1 -
 
 # PR review summary from a local JSON file
 gitlink-cli workflow +pr-summary --from shortcuts/workflow/testdata/pr_summary.json --format json
+
+# Repository workflow report by read-only GitLink fetch
+gitlink-cli workflow +repo-report --owner Gitlink --repo gitlink-cli --format markdown
+
+# Repository workflow report from a local JSON file
+gitlink-cli workflow +repo-report --from shortcuts/workflow/testdata/repo_report.json --format json
 ```
 
 Output formats:
@@ -349,6 +387,7 @@ Safety:
 - They do not modify remote GitLink data.
 - They do not depend on LLM APIs.
 - `workflow +pr-summary` does not comment, approve, reject, or merge pull requests.
+- `workflow +repo-report` aggregates health, issue triage, and PR review summary signals without remote writes.
 
 ### Raw API
 
@@ -520,7 +559,9 @@ Reinstall first:
 npm install -g @gitlink-ai/cli
 ```
 
-If the error persists, check whether the release page contains the asset for your platform, for example `gitlink-cli_<version>_windows_amd64.zip` on Windows x64. You can also download the binary manually from the release page or build from source with `go install .`.
+If the error persists, check whether the release page contains the asset for your platform,
+for example `gitlink-cli_<version>_windows_amd64.zip` on Windows x64.
+You can also download the binary manually from the release page or build from source with `go install .`.
 
 ### Q: Where are credentials stored on Windows?
 

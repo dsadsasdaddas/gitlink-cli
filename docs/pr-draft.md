@@ -1,8 +1,9 @@
-# PR Draft: Add workflow agent commands for issue triage, repository health, and PR summaries
+# PR Draft: Add workflow agent commands for issue triage, repository health, PR summaries, and repo reports
 
 ## Summary
 
-This PR adds `workflow +triage`, `workflow +health`, and `workflow +pr-summary` with safe read-only analysis modes:
+This PR adds `workflow +triage`, `workflow +health`, `workflow +pr-summary`,
+and `workflow +repo-report` with safe read-only analysis modes:
 
 - local flags
 - local JSON input
@@ -15,6 +16,7 @@ It also adds stable `json`, `table`, and `markdown` rendering for Agent consumpt
 - Help maintainers triage issues faster
 - Provide a structured repository health overview
 - Summarize pull requests with review focus, test suggestions, and merge checklist output
+- Generate a repository workflow report that aggregates health, issue triage, and PR signals
 - Give AI Agents stable machine-readable output
 - Keep the workflow local-first and safe by default
 - Avoid any dependency on external LLM APIs
@@ -24,6 +26,7 @@ It also adds stable `json`, `table`, and `markdown` rendering for Agent consumpt
 - New `shortcuts/workflow` rule engine and DTOs
 - Local command layer for `workflow +triage` and `workflow +health`
 - Local and remote command layer for `workflow +pr-summary`
+- Local and partial remote aggregation for `workflow +repo-report`
 - Workflow-local renderer for `json`, `table`, and `markdown`
 - Read-only GitLink fetch and normalization helpers
 - Unit tests for rules, fetch normalization, rendering, and command wiring
@@ -44,10 +47,13 @@ It also adds stable `json`, `table`, and `markdown` rendering for Agent consumpt
 - `httptest` coverage for API normalization and fetch tolerance
 - Manual command examples in local and remote read-only modes
 - PR summary tests for change type, risk level, partial fetch failures, renderers, and command wiring
+- Repo report tests for aggregation, partial fetch behavior, renderers, local JSON input, and command wiring
 
 ## Known Limitations
 
 - Real API response shapes may still require minor normalization tweaks
+- Remote `workflow +repo-report` PR aggregation currently uses PR list metadata;
+  detailed file and commit analysis remains available through `workflow +pr-summary --number`
 - Write operations are intentionally deferred to a later PR
 - `release-notes` and `stale` are planned next
 
@@ -58,4 +64,5 @@ gitlink-cli workflow +triage --title "Token leaked in logs" --body "The access t
 gitlink-cli workflow +health --repository Gitlink/gitlink-cli --open-issues 3 --open-prs 1 --has-readme --has-license --has-contributing --agent-readiness-known --agent-readiness-score 9 --format table
 gitlink-cli workflow +triage --owner Gitlink --repo gitlink-cli --state open --limit 5 --format table
 gitlink-cli workflow +pr-summary --owner Gitlink --repo gitlink-cli --number 1 --format markdown
+gitlink-cli workflow +repo-report --owner Gitlink --repo gitlink-cli --format markdown
 ```

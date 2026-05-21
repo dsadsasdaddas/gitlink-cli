@@ -119,6 +119,29 @@ Rules:
 - This command is read-only: it does not comment, approve, reject, merge, label, or close pull requests.
 - Do not use LLM APIs for this workflow; it is rule-based and explainable.
 
+## Workflow: Repository Report (Read-only)
+
+Use `workflow +repo-report` when a maintainer or Agent needs a single repository workflow report
+that aggregates health, issue triage, and PR review signals.
+
+```bash
+# Maintainer report
+gitlink-cli workflow +repo-report --owner Gitlink --repo gitlink-cli --format markdown
+
+# Agent-readable report
+gitlink-cli workflow +repo-report --owner Gitlink --repo gitlink-cli --format json
+
+# Local fixture mode
+gitlink-cli workflow +repo-report --from shortcuts/workflow/testdata/repo_report.json --format markdown
+```
+
+Rules:
+- Prefer `--format json` when another Agent consumes the output.
+- Prefer `--format markdown` for maintainer reports, competition materials, and review handoff.
+- Treat remote mode as read-only aggregation only.
+- Do not comment, label, close, approve, reject, or merge from this workflow.
+- PR details in remote report mode may be partial; use `workflow +pr-summary --number <n>` for a focused PR review.
+
 ## 最佳实践
 
 - 所有工作流命令使用 `--format json` 以便解析输出

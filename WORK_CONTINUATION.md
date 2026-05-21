@@ -8,6 +8,7 @@ Current implemented slice:
 - `workflow +triage`
 - `workflow +health`
 - `workflow +pr-summary`
+- `workflow +repo-report`
 
 Planned next:
 - `workflow +release-notes`
@@ -40,7 +41,8 @@ Planned next:
 - Added local input support:
   - `workflow +triage`: single issue flags or `--from` JSON file.
   - `workflow +health`: explicit metric flags or `--from` JSON file.
-  - `workflow +pr-summary`: PR number fetch or `--from` JSON file.
+- `workflow +pr-summary`: PR number fetch or `--from` JSON file.
+  - `workflow +repo-report`: aggregate health, issues, and PR list metadata or `--from` JSON file.
 - Verified all three commands run locally without GitLink API write access.
 - Added read-only workflow API fetch helpers and mock tests.
 - Added command-level fetch-path smoke tests for `runTriage`, `runHealth`, and `runPRSummary`.
@@ -50,6 +52,8 @@ Planned next:
 - Added `docs/pr-draft.md`.
 - Added workflow testdata fixtures under `shortcuts/workflow/testdata/`.
 - Expanded fetch-layer boundary coverage for empty responses, label and author normalization, error-in-body handling, alternative activity timestamps, release shapes, CI unavailability, and PR summary normalization.
+- Added `workflow +repo-report` with local JSON input, read-only partial fetch aggregation,
+  report score, overall risk level, markdown/table/json rendering, and tests.
 
 ## Current Go Toolchain Status
 
@@ -67,15 +71,54 @@ Planned next:
 - `go test ./shortcuts/workflow`: passed.
 - `go test ./...`: passed.
 - Smoke command passed:
-  - `go run . --format json workflow +triage --title "Token leaked in logs" --body "secret token leaked" --number 1 --labels security`
+  ```bash
+  go run . --format json workflow +triage \
+    --title "Token leaked in logs" \
+    --body "secret token leaked" \
+    --number 1 \
+    --labels security
+  ```
 - Smoke command passed:
-  - `go run . --format table workflow +health --repository owner/repo --open-issues 2 --open-prs 1 --recent-activity-known --recent-activity-days 3 --release-known --has-recent-release --has-readme --has-license --has-contributing --agent-readiness-known --agent-readiness-score 9`
+  ```bash
+  go run . --format table workflow +health \
+    --repository owner/repo \
+    --open-issues 2 \
+    --open-prs 1 \
+    --recent-activity-known \
+    --recent-activity-days 3 \
+    --release-known \
+    --has-recent-release \
+    --has-readme \
+    --has-license \
+    --has-contributing \
+    --agent-readiness-known \
+    --agent-readiness-score 9
+  ```
 - Smoke command passed:
-  - `go run . --format json workflow +pr-summary --from shortcuts/workflow/testdata/pr_summary.json`
+  ```bash
+  go run . --format json workflow +pr-summary \
+    --from shortcuts/workflow/testdata/pr_summary.json
+  ```
+- Smoke command passed:
+  ```bash
+  go run . --format markdown workflow +repo-report \
+    --from shortcuts/workflow/testdata/repo_report.json
+  ```
 - Remote read-only smoke command passed:
-  - `go run . --format table workflow +triage --owner Gitlink --repo gitlink-cli --state open --limit 5`
+  ```bash
+  go run . --format table workflow +triage \
+    --owner Gitlink \
+    --repo gitlink-cli \
+    --state open \
+    --limit 5
+  ```
 - Remote read-only smoke command passed:
-  - `go run . --format markdown --lang zh-CN workflow +health --owner Gitlink --repo gitlink-cli --stale-days 30`
+  ```bash
+  go run . --format markdown --lang zh-CN workflow +health \
+    --owner Gitlink \
+    --repo gitlink-cli \
+    --stale-days 30
+  ```
 - Documentation examples now cover local-parameter, local-JSON-file, and read-only fetch usage.
 
 ## Recent Changed Files
@@ -96,6 +139,11 @@ Planned next:
 - `shortcuts/workflow/pr_fetch_test.go`
 - `shortcuts/workflow/render_test.go`
 - `shortcuts/workflow/testdata/pr_summary.json`
+- `shortcuts/workflow/repo_report.go`
+- `shortcuts/workflow/repo_report_fetch.go`
+- `shortcuts/workflow/repo_report_test.go`
+- `shortcuts/workflow/repo_report_fetch_test.go`
+- `shortcuts/workflow/testdata/repo_report.json`
 - `skills/gitlink-workflow/SKILL.md`
 - `pr-test-file.txt` deleted
 
@@ -126,6 +174,7 @@ Planned next:
 - `+triage` supports local single-issue flags, JSON file input, and read-only GitLink fetch mode.
 - `+health` supports local metric flags, JSON file input, and read-only GitLink fetch mode.
 - `+pr-summary` supports local JSON input and read-only PR metadata fetch mode.
+- `+repo-report` supports local JSON input and read-only partial aggregation of health, issue, and PR list metadata.
 - Treat unavailable future API metrics as `unknown` and include them in `scoring_notes`.
 - Workflow-local renderers keep json/table/markdown output isolated from the global formatter.
 

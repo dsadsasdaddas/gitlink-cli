@@ -2,9 +2,15 @@
 
 ## Background
 
-`gitlink-cli` already provides low-level and shortcut operations for GitLink repositories, issues, pull requests, releases, CI, organizations, search, and users. The repository also includes `skills/gitlink-workflow/SKILL.md`, which describes AI workflow patterns such as Issue triage, PR review, and Release Notes generation.
+`gitlink-cli` already provides low-level and shortcut operations for GitLink repositories,
+issues, pull requests, releases, CI, organizations, search, and users.
+The repository also includes `skills/gitlink-workflow/SKILL.md`, which describes
+AI workflow patterns such as Issue triage, PR review, and Release Notes generation.
 
-The current Go command tree does not include a `workflow` command group. The first competition PR should turn the documented workflow concept into concrete, deterministic CLI commands that can be used by human maintainers and AI Agents without calling an external LLM.
+The current Go command tree did not include a `workflow` command group before this work.
+The competition PR turns the documented workflow concept into concrete,
+deterministic CLI commands that can be used by human maintainers and AI Agents
+without calling an external LLM.
 
 ## Goals
 
@@ -19,6 +25,7 @@ First PR:
 
 Additional workflow commands:
 - `workflow +pr-summary`: done
+- `workflow +repo-report`: done
 - `workflow +release-notes`: planned
 - `workflow +stale`: planned
 
@@ -26,8 +33,11 @@ Current implementation status:
 - Rule engine: done
 - Local command layer: done
 - API fetch layer: done
-- Boundary tests: expanded for empty responses, field normalization, unknown tolerance, and read-only error handling
+- Boundary tests: expanded for empty responses, field normalization,
+  unknown tolerance, and read-only error handling
 - PR summary command: done with local JSON input, read-only fetch, rules, renderers, and tests
+- Repo report command: done with local JSON input, partial read-only fetch aggregation,
+  scoring, renderers, and tests
 
 ## Current Repository Findings
 
@@ -379,6 +389,50 @@ Safety:
 - no merge
 - no remote write operation
 
+### `workflow +repo-report`
+
+Inputs:
+- `--owner`
+- `--repo`
+- `--from`
+- `--lang`
+- `--format`
+- optional `--issue-limit`
+- optional `--pr-limit`
+- optional `--stale-days`
+- optional `--include-issues`
+- optional `--include-prs`
+- optional `--include-health`
+
+Default format:
+- `markdown` for maintainer and competition reports when `--format` is omitted
+
+Data:
+- repository health input and score
+- issue triage results aggregated by type, priority, risk, and missing information
+- PR summary results aggregated by type, risk, and review focus
+
+Output:
+- `report_score`
+- `risk_level`
+- `health`
+- `issue_summary`
+- `pr_summary`
+- `recommendations`
+- `reasoning`
+
+Partial report strategy:
+- health, issue, and PR sections are fetched independently
+- if at least one enabled section succeeds, the command returns a partial report
+- failed sections are recorded in scoring notes or reasoning
+- PR remote aggregation currently uses PR list metadata only;
+  detailed changed files and commits remain available through `workflow +pr-summary --number`
+
+Safety:
+- read-only aggregation only
+- no comments, labels, closes, approve/reject, or merge operations
+- no LLM dependency
+
 ### `workflow +release-notes`
 
 Inputs:
@@ -418,6 +472,8 @@ The current fetch layer uses:
 
 - `triage_fetch.go`
 - `health_fetch.go`
+- `pr_fetch.go`
+- `repo_report_fetch.go`
 
 Design goals already applied:
 
@@ -430,6 +486,7 @@ Planned fetch-layer extension:
 
 - `triage_fetch.go` and `health_fetch.go` remain the normalization boundary for remote mode.
 - `pr_fetch.go` now reuses the same stable DTO and message patterns for read-only PR metadata, changed files, and commits.
+- `repo_report_fetch.go` composes the existing fetch helpers and records partial failures instead of failing the whole report.
 - Future `release-notes` should reuse the same normalization and renderer patterns.
 - Unknown or missing fields should stay explicit in JSON output so Agents can decide how to proceed.
 
