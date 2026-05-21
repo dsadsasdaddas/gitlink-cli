@@ -101,6 +101,24 @@ gitlink-cli pr +list --state merged --format json
 gitlink-cli api GET /:owner/:repo/activity --format json
 ```
 
+## Workflow: PR Summary (Read-only)
+
+Use `workflow +pr-summary` when a maintainer or Agent needs a structured PR review summary, review focus, test suggestions, or a markdown report that can be copied into a PR discussion.
+
+```bash
+# Read-only GitLink fetch mode
+gitlink-cli workflow +pr-summary --owner Gitlink --repo gitlink-cli --number 1 --format markdown
+
+# Local JSON input mode for Agent pipelines
+gitlink-cli workflow +pr-summary --from shortcuts/workflow/testdata/pr_summary.json --format json
+```
+
+Rules:
+- Prefer `--format json` when another Agent consumes the output.
+- Prefer `--format markdown` when a human maintainer needs a report.
+- This command is read-only: it does not comment, approve, reject, merge, label, or close pull requests.
+- Do not use LLM APIs for this workflow; it is rule-based and explainable.
+
 ## 最佳实践
 
 - 所有工作流命令使用 `--format json` 以便解析输出

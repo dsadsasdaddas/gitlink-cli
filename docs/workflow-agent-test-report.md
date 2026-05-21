@@ -6,6 +6,7 @@ This phase covers:
 
 - Issue triage rules
 - health scoring rules
+- PR summary rules
 - local command execution
 - API fetch boundary tests
 - remote read-only manual verification
@@ -43,6 +44,7 @@ Results:
 - render tests
 - command tests
 - fetch boundary tests
+- PR summary rules and fetch tests
 
 ## API Fetch Boundary Tests
 
@@ -55,6 +57,9 @@ Results:
 - release responses accept `releases`, `data`, and direct array shapes
 - CI unavailability is recorded as `unknown` without failing the whole health run
 - stale-days values `0` and negative values fall back to the default `30`
+- PR summary fetch normalizes PR metadata, changed files, commits, authors, branches, and list limits
+- PR summary tolerates partial files or commits fetch failures while keeping base PR metadata
+- PR summary base PR error-in-body responses return readable errors
 
 ## Manual Command Examples
 
@@ -66,6 +71,8 @@ gitlink-cli workflow +triage --from shortcuts/workflow/testdata/issue_bug.json -
 gitlink-cli workflow +health --repository Gitlink/gitlink-cli --open-issues 3 --open-prs 1 --has-readme --has-license --has-contributing --agent-readiness-known --agent-readiness-score 9 --format table
 gitlink-cli workflow +health --repository demo/repo --open-issues 60 --stale-issues 25 --open-prs 12 --stale-prs 6 --recent-activity-known --recent-activity-days 120 --release-known=false --format json
 gitlink-cli workflow +health --repository Gitlink/gitlink-cli --open-issues 3 --open-prs 1 --has-readme --has-license --has-contributing --lang zh-CN --format markdown
+gitlink-cli workflow +pr-summary --owner Gitlink --repo gitlink-cli --number 1 --format markdown
+gitlink-cli workflow +pr-summary --from shortcuts/workflow/testdata/pr_summary.json --format json
 ```
 
 ## Remote Manual Verification
@@ -81,6 +88,7 @@ gitlink-cli workflow +health --repository Gitlink/gitlink-cli --open-issues 3 --
 - Current workflow commands support local analysis and read-only GitLink fetch mode.
 - `workflow +triage` still supports local parameters or a local JSON file via `--from`.
 - `workflow +health` still supports local parameters or a local JSON file via `--from`.
+- `workflow +pr-summary` supports local JSON input and read-only GitLink fetch mode.
 - `json/table/markdown` are rendered inside the workflow package, not by the global formatter.
 - Fetch-layer tests use `httptest` and do not depend on the real remote API.
 

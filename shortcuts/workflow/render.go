@@ -1,6 +1,7 @@
 package workflow
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -32,6 +33,27 @@ func renderHealthResult(w io.Writer, result HealthResult, format string) error {
 	default:
 		return fmt.Errorf("unsupported workflow output format %q", format)
 	}
+}
+
+func RenderPRSummary(result PRSummaryResult, format string, lang string) (string, error) {
+	var buf bytes.Buffer
+	switch normalizeFormat(format) {
+	case "json":
+		if err := writeJSON(&buf, result); err != nil {
+			return "", err
+		}
+	case "markdown":
+		if err := writePRSummaryMarkdown(&buf, result, lang); err != nil {
+			return "", err
+		}
+	case "table":
+		if err := writePRSummaryTable(&buf, result); err != nil {
+			return "", err
+		}
+	default:
+		return "", fmt.Errorf("unsupported workflow output format %q", format)
+	}
+	return buf.String(), nil
 }
 
 func normalizeFormat(format string) string {
@@ -71,6 +93,25 @@ func writeTriageTable(w io.Writer, report TriageReport) error {
 		); err != nil {
 			return err
 		}
+	}
+	return tw.Flush()
+}
+
+func writePRSummaryTable(w io.Writer, result PRSummaryResult) error {
+	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
+	if _, err := fmt.Fprintln(tw, "PR\tTITLE\tTYPE\tRISK\tFILES\tCOMMITS\tSOURCE"); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(tw, "#%d\t%s\t%s\t%s\t%d\t%d\t%s\n",
+		result.Number,
+		truncateTableText(result.Title, 72),
+		result.ChangeType,
+		result.RiskLevel,
+		result.ChangedFilesCount,
+		result.CommitCount,
+		result.Source,
+	); err != nil {
+		return err
 	}
 	return tw.Flush()
 }
@@ -120,6 +161,61 @@ func writeTriageMarkdown(w io.Writer, report TriageReport) error {
 	return nil
 }
 
+func writePRSummaryMarkdown(w io.Writer, result PRSummaryResult, lang string) error {
+	lang = normalizeLang(lang)
+	if _, err := fmt.Fprintf(w, "# %s\n\n", message(lang, "pr_summary_title")); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(w, "## %s\n\n", message(lang, "pr_summary_overview")); err != nil {
+		return err
+	}
+	lines := []string{
+		fmt.Sprintf("- Repository: `%s`", result.Repository),
+		fmt.Sprintf("- PR: `#%d` %s", result.Number, result.Title),
+		fmt.Sprintf("- Author: `%s`", result.Author),
+		fmt.Sprintf("- State: `%s`", result.State),
+		fmt.Sprintf("- Base branch: `%s`", result.BaseBranch),
+		fmt.Sprintf("- Head branch: `%s`", result.HeadBranch),
+		fmt.Sprintf("- Change type: `%s`", result.ChangeType),
+		fmt.Sprintf("- Risk level: `%s`", result.RiskLevel),
+		fmt.Sprintf("- Changed files: `%d`", result.ChangedFilesCount),
+		fmt.Sprintf("- Commits: `%d`", result.CommitCount),
+		fmt.Sprintf("- Source: `%s`", result.Source),
+	}
+	for _, line := range lines {
+		if _, err := fmt.Fprintln(w, line); err != nil {
+			return err
+		}
+	}
+
+	if err := writePRSummaryMarkdownList(w, message(lang, "pr_summary_review_focus"), result.ReviewFocus, message(lang, "pr_summary_no_focus")); err != nil {
+		return err
+	}
+	if err := writePRSummaryMarkdownList(w, message(lang, "pr_summary_test_suggestions"), result.TestSuggestions, message(lang, "pr_summary_no_suggestions")); err != nil {
+		return err
+	}
+	if err := writePRSummaryMarkdownList(w, message(lang, "pr_summary_merge_checklist"), result.MergeChecklist, message(lang, "pr_summary_no_checklist")); err != nil {
+		return err
+	}
+	return writePRSummaryMarkdownList(w, message(lang, "pr_summary_reasoning"), result.Reasoning, message(lang, "pr_summary_no_reasoning"))
+}
+
+func writePRSummaryMarkdownList(w io.Writer, title string, values []string, fallback string) error {
+	if _, err := fmt.Fprintf(w, "\n## %s\n\n", title); err != nil {
+		return err
+	}
+	if len(values) == 0 {
+		_, err := fmt.Fprintf(w, "- %s\n", fallback)
+		return err
+	}
+	for _, value := range values {
+		if _, err := fmt.Fprintf(w, "- %s\n", value); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func writeHealthMarkdown(w io.Writer, result HealthResult) error {
 	if _, err := fmt.Fprintf(w, "# Repository Health Report\n\nRepository: `%s`\n\nHealth score: **%d**\n\nRisk level: **%s**\n\n", result.Repository, result.HealthScore, result.RiskLevel); err != nil {
 		return err
@@ -150,4 +246,16 @@ func writeHealthMarkdown(w io.Writer, result HealthResult) error {
 		}
 	}
 	return nil
+}
+
+func truncateTableText(value string, max int) string {
+	value = strings.Join(strings.Fields(value), " ")
+	runes := []rune(value)
+	if max <= 0 || len(runes) <= max {
+		return value
+	}
+	if max <= 3 {
+		return string(runes[:max])
+	}
+	return string(runes[:max-3]) + "..."
 }

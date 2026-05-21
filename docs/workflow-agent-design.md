@@ -17,16 +17,17 @@ First PR:
 - Produce markdown output for reports, PR comments, Issue comments, and competition materials.
 - Support `--lang en` and `--lang zh-CN` with a lightweight message helper.
 
-Later PRs:
-- `workflow +pr-summary`
-- `workflow +release-notes`
-- `workflow +stale`
+Additional workflow commands:
+- `workflow +pr-summary`: done
+- `workflow +release-notes`: planned
+- `workflow +stale`: planned
 
 Current implementation status:
 - Rule engine: done
 - Local command layer: done
 - API fetch layer: done
 - Boundary tests: expanded for empty responses, field normalization, unknown tolerance, and read-only error handling
+- PR summary command: done with local JSON input, read-only fetch, rules, renderers, and tests
 
 ## Current Repository Findings
 
@@ -341,8 +342,17 @@ Command tests:
 ### `workflow +pr-summary`
 
 Inputs:
-- `--id`
-- optional `--lang`
+- `--number`
+- `--from`
+- `--lang`
+- `--format`
+- optional `--include-files`
+- optional `--include-commits`
+- optional `--max-files`
+- optional `--max-commits`
+
+Default format:
+- `table` for human review when `--format` is omitted
 
 Data:
 - PR details
@@ -352,10 +362,22 @@ Data:
 Output:
 - `change_type`
 - `risk_level`
-- `summary`
 - `review_focus`
 - `test_suggestions`
 - `merge_checklist`
+- `reasoning`
+
+Implementation status:
+- read-only local JSON mode: done
+- read-only GitLink fetch mode: done
+- rules and renderers: done
+- tests: rules, fetch boundary, render, and command wiring
+
+Safety:
+- no comments
+- no approve/reject
+- no merge
+- no remote write operation
 
 ### `workflow +release-notes`
 
@@ -407,7 +429,8 @@ Design goals already applied:
 Planned fetch-layer extension:
 
 - `triage_fetch.go` and `health_fetch.go` remain the normalization boundary for remote mode.
-- Future `pr-summary` and `release-notes` should reuse the same stable DTO and message patterns.
+- `pr_fetch.go` now reuses the same stable DTO and message patterns for read-only PR metadata, changed files, and commits.
+- Future `release-notes` should reuse the same normalization and renderer patterns.
 - Unknown or missing fields should stay explicit in JSON output so Agents can decide how to proceed.
 
 ## Implementation Order

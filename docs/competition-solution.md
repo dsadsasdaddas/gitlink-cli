@@ -22,14 +22,15 @@ Implemented now:
 
 - `workflow +triage`
 - `workflow +health`
+- `workflow +pr-summary`
 - read-only GitLink fetch layer for workflow triage and health
+- read-only PR metadata, changed files, and commits fetch layer for PR summary
 - expanded fetch boundary tests for empty responses, label and author normalization, error-in-body handling, alternative activity timestamps, release shapes, and CI unavailability
 - local-first analysis with no LLM dependency
 - stable Agent-facing JSON / table / markdown output
 
 Planned next:
 
-- `workflow +pr-summary`
 - `workflow +release-notes`
 - `workflow +stale`
 
@@ -65,6 +66,15 @@ Planned next:
 - recommendations
 - unknown metric tolerance
 
+### workflow +pr-summary
+
+- change type detection
+- risk level analysis
+- review focus generation
+- test suggestion generation
+- merge checklist generation
+- read-only fetch of PR metadata, changed files, and commits
+
 ## 6. Innovation Points
 
 - Agent-native structured output
@@ -78,8 +88,9 @@ Planned next:
 ## 7. Testing and Verification
 
 - Unit tests cover triage, health scoring, messages, rendering, and command helpers.
-- Fetch-layer tests cover issue normalization and repository health probing with `httptest`.
+- Fetch-layer tests cover issue normalization, repository health probing, and PR metadata/file/commit normalization with `httptest`.
 - Boundary tests cover empty responses, label and author normalization, error-in-body handling, alternative activity timestamps, release response shapes, and CI unavailability.
+- PR summary tests cover docs-only, workflow code, internal client, security-sensitive, mixed-file, zh-CN, render, command, and fetch-failure cases.
 - Local command examples were executed successfully.
 - Full repository testing passed in the current environment.
 - Automated tests use `httptest` and do not depend on real remote API availability.
@@ -95,7 +106,8 @@ Use `Gitlink/gitlink-cli` as the reference repository:
 3. `workflow +triage` with Chinese markdown output
 4. `workflow +health` with table output
 5. `workflow +health` with risky JSON output
-6. Explain how agents consume stable JSON
+6. `workflow +pr-summary` with markdown output
+7. Explain how agents consume stable JSON
 
 ### Self-built test repository
 
@@ -111,11 +123,13 @@ Use a small demo repository to show:
 
 - Phase 1: local workflow prototype, completed
 - Phase 2: API fetch and normalization, completed
-- Phase 3: `pr-summary`, `release-notes`, `stale`
+- Phase 3: `pr-summary`, completed
+- Phase 4: `release-notes`, `stale`
 
 ## 10. PR Plan
 
 - PR 1: workflow rule engine and local commands
 - PR 2: documentation and tests
 - PR 3: API fetch layer
-- PR 4: `pr-summary` / `release-notes`
+- PR 4: `pr-summary`
+- PR 5: `release-notes` / `stale`

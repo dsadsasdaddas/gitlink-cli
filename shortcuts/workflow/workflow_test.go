@@ -25,6 +25,9 @@ func TestShortcutsExposesWorkflowCommands(t *testing.T) {
 	if !names["health"] {
 		t.Fatal("Shortcuts missing health")
 	}
+	if !names["pr-summary"] {
+		t.Fatal("Shortcuts missing pr-summary")
+	}
 }
 
 func TestRunTriageWithSingleIssueArgs(t *testing.T) {

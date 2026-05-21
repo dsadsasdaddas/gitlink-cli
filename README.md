@@ -296,6 +296,9 @@ gitlink-cli search +users -k "zhangsan"
 
 - `workflow +triage`
 - `workflow +health`
+- `workflow +pr-summary`
+
+`workflow +pr-summary` defaults to `table` when `--format` is omitted.
 
 Examples:
 
@@ -326,6 +329,12 @@ gitlink-cli workflow +health --repository Gitlink/gitlink-cli --open-issues 3 --
 
 # Health by read-only GitLink fetch
 gitlink-cli workflow +health --owner Gitlink --repo gitlink-cli --stale-days 30 --format table
+
+# PR review summary by read-only GitLink fetch
+gitlink-cli workflow +pr-summary --owner Gitlink --repo gitlink-cli --number 1 --format markdown
+
+# PR review summary from a local JSON file
+gitlink-cli workflow +pr-summary --from shortcuts/workflow/testdata/pr_summary.json --format json
 ```
 
 Output formats:
@@ -339,6 +348,7 @@ Safety:
 - Current workflow commands use local analysis by default and can also read GitLink data in read-only fetch mode.
 - They do not modify remote GitLink data.
 - They do not depend on LLM APIs.
+- `workflow +pr-summary` does not comment, approve, reject, or merge pull requests.
 
 ### Raw API
 
@@ -361,7 +371,7 @@ gitlink-cli api GET /Gitlink/forgeplus/commits --query 'page=1&limit=5'
 |-----------|-------------|---------|
 | `--owner` | Repository owner | `--owner Gitlink` |
 | `--repo` | Repository name | `--repo forgeplus` |
-| `--format` | Output format (json/table/yaml) | `--format json` |
+| `--format` | Output format (json/table/yaml; workflow also supports markdown) | `--format json` |
 | `--debug` | Enable debug output | `--debug` |
 
 **Automatic context resolution:** When running inside a git repository, `--owner` and `--repo` are automatically resolved from `git remote origin`.
