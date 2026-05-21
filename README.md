@@ -290,6 +290,56 @@ gitlink-cli search +repos -k "machine learning"
 gitlink-cli search +users -k "zhangsan"
 ```
 
+### Workflow Agent Commands
+
+`workflow` provides rule-based repository analysis for maintainers and AI Agents. It currently supports:
+
+- `workflow +triage`
+- `workflow +health`
+
+Examples:
+
+```bash
+# Triage with local parameters
+gitlink-cli workflow +triage --title "Install failed on Windows" --body "go install failed with error" --format table
+
+# Triage with JSON output
+gitlink-cli workflow +triage --title "Token leaked in logs" --body "The access token appears in command output" --format json
+
+# Triage with Chinese markdown output
+gitlink-cli workflow +triage --title "安装失败，无法登录" --body "运行命令时报错" --lang zh-CN --format markdown
+
+# Triage from a local JSON file
+gitlink-cli workflow +triage --from shortcuts/workflow/testdata/issue_bug.json --format json
+
+# Triage by read-only GitLink fetch
+gitlink-cli workflow +triage --owner Gitlink --repo gitlink-cli --state open --limit 5 --format table
+
+# Health for a healthy repository
+gitlink-cli workflow +health --repository Gitlink/gitlink-cli --open-issues 3 --open-prs 1 --has-readme --has-license --has-contributing --agent-readiness-known --agent-readiness-score 9 --format table
+
+# Health for a risky repository
+gitlink-cli workflow +health --repository demo/repo --open-issues 60 --stale-issues 25 --open-prs 12 --stale-prs 6 --recent-activity-known --recent-activity-days 120 --release-known=false --format json
+
+# Health with Chinese markdown output
+gitlink-cli workflow +health --repository Gitlink/gitlink-cli --open-issues 3 --open-prs 1 --has-readme --has-license --has-contributing --lang zh-CN --format markdown
+
+# Health by read-only GitLink fetch
+gitlink-cli workflow +health --owner Gitlink --repo gitlink-cli --stale-days 30 --format table
+```
+
+Output formats:
+
+- `json` for scripts and AI Agents
+- `table` for terminal review
+- `markdown` for Issue comments, PR comments, release notes, and competition write-ups
+
+Safety:
+
+- Current workflow commands use local analysis by default and can also read GitLink data in read-only fetch mode.
+- They do not modify remote GitLink data.
+- They do not depend on LLM APIs.
+
 ### Raw API
 
 For endpoints not covered by shortcuts, use the Raw API directly:
