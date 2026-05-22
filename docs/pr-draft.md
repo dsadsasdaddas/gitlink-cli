@@ -87,11 +87,6 @@ Coverage includes:
 - `README.md`
 - `docs/workflow-agent-design.md`
 - `docs/workflow-agent-test-report.md`
-- `docs/competition-solution.md`
-- `docs/competition-submit.zh-CN.md`
-- `docs/demo-script.md`
-- `docs/final-submission-checklist.md`
-- `docs/defense-qa.md`
 - `skills/gitlink-workflow/SKILL.md`
 
 ## Known Limitations
