@@ -100,8 +100,6 @@ Coverage includes:
 - `workflow +release-notes` is not implemented.
 - `workflow +stale` is not implemented.
 - Real GitLink API shapes may require follow-up normalization.
-- Remote `workflow +repo-report` PR aggregation currently uses PR list metadata;
-  detailed changed-file and commit analysis is available through `workflow +pr-summary --number`.
 
 ## Examples
 

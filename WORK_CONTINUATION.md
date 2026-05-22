@@ -41,7 +41,7 @@ Planned next:
 - Added local input support:
   - `workflow +triage`: single issue flags or `--from` JSON file.
   - `workflow +health`: explicit metric flags or `--from` JSON file.
-- `workflow +pr-summary`: PR number fetch or `--from` JSON file.
+  - `workflow +pr-summary`: PR number fetch or `--from` JSON file.
   - `workflow +repo-report`: aggregate health, issues, and PR list metadata or `--from` JSON file.
 - Verified all three commands run locally without GitLink API write access.
 - Added read-only workflow API fetch helpers and mock tests.
@@ -194,7 +194,7 @@ Planned next:
 
 ## Next Minimal Executable Task
 
-Create GitLink official PR and record CI result.
+Create GitLink official PR, record CI result, and record demo video.
 
 ## How To Continue After Interruption
 
@@ -209,4 +209,4 @@ Create GitLink official PR and record CI result.
 
 ## Recommended Next Codex Instruction
 
-Create GitLink official PR from branch `codex/workflow-agent`, then record PR URL and CI result in `docs/final-submission-checklist.md`.
+Create GitLink official PR from branch `codex/workflow-agent`, then record PR URL, CI result, and demo video status in `docs/final-submission-checklist.md`.
