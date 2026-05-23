@@ -11,6 +11,18 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 
 [Install](#installation--quick-start) · [AI Agent Skills](#ai-agent-skills) · [Auth](#configure--use) · [Commands](#usage-examples) · [Contributing](#related-projects)
 
+## Contributors
+
+<a href="https://www.gitlink.org.cn/wangyue111" title="wangyue111"><img src="https://www.gitlink.org.cn/system/lets/letter_avatars/2/W/43_254_70/120.png" width="40" height="40" alt="wangyue111"></a>
+<a href="https://www.gitlink.org.cn/wbtiger" title="tigerwang"><img src="https://www.gitlink.org.cn/system/lets/letter_avatars/2/T/14_168_39/120.png" width="40" height="40" alt="wbtiger"></a>
+<a href="https://www.gitlink.org.cn/Mengz" title="Mengz"><img src="https://www.gitlink.org.cn/system/lets/letter_avatars/2/M/166_152_185/120.png" width="40" height="40" alt="Mengz"></a>
+<a href="https://www.gitlink.org.cn/yangsai" title="杨赛"><img src="https://www.gitlink.org.cn/system/lets/letter_avatars/2/Y/94_150_149/120.png" width="40" height="40" alt="yangsai"></a>
+<a href="https://www.gitlink.org.cn/mengcheng" title="camelliamc"><img src="https://www.gitlink.org.cn/system/lets/letter_avatars/2/M/206_114_54/120.png" width="40" height="40" alt="mengcheng"></a>
+<a href="https://www.gitlink.org.cn/muel" title="赵奕程"><img src="https://www.gitlink.org.cn/system/lets/letter_avatars/2/Z/144_206_212/120.png" width="40" height="40" alt="muel"></a>
+<a href="https://www.gitlink.org.cn/Leo77" title="Leo77"><img src="https://www.gitlink.org.cn/system/lets/letter_avatars/2/L/173_120_149/120.png" width="40" height="40" alt="Leo77"></a>
+<a href="https://www.gitlink.org.cn/yingjie" title="yingjie"><img src="https://www.gitlink.org.cn/images/avatars/User/145288?t=1765791899" width="40" height="40" alt="yingjie"></a>
+<a href="https://www.gitlink.org.cn/topshare" title="Kevin Zhang"><img src="https://www.gitlink.org.cn/system/lets/letter_avatars/2/K/65_152_142/120.png" width="40" height="40" alt="topshare"></a>
+
 ## Why gitlink-cli?
 
 - **Agent-Native Design** — 13 structured [Skills](./skills/) out of the box, compatible with Claude Code, OpenClaw, and other AI platforms — Agents can operate GitLink with zero extra setup
