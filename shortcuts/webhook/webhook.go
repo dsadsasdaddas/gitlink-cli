@@ -7,16 +7,52 @@ import (
 	"github.com/gitlink-org/gitlink-cli/shortcuts/common"
 )
 
+var allowedWebhookTypes = map[string]bool{
+	"gitea": true, "slack": true, "discord": true, "dingtalk": true, "telegram": true,
+	"msteams": true, "feishu": true, "matrix": true, "jianmu": true, "softbot": true,
+}
+
+var allowedWebhookContentTypes = map[string]bool{"json": true, "form": true}
+var allowedWebhookMethods = map[string]bool{"GET": true, "POST": true}
+
+var allowedWebhookEvents = map[string]bool{
+	"push": true, "create": true, "delete": true,
+	"issues_only": true, "issue_assign": true, "issue_label": true, "issue_comment": true,
+	"pull_request_only": true, "pull_request_assign": true, "pull_request_comment": true,
+}
+
+// Shortcuts returns webhook management shortcuts.
 func Shortcuts() []*common.Shortcut {
 	return []*common.Shortcut{
 		{
 			Name:        "list",
-			Description: "List webhooks",
+			Description: "List repository webhooks",
 			Run: func(ctx *common.RuntimeContext) error {
 				if err := ctx.ResolveOwnerRepo(); err != nil {
 					return err
 				}
-				env, err := ctx.CallAPI("GET", ctx.RepoPath()+"/webhooks", nil)
+				env, err := ctx.CallAPI("GET", webhookPath(ctx), nil)
+				if err != nil {
+					return err
+				}
+				return ctx.Output(env)
+			},
+		},
+		{
+			Name:        "view",
+			Description: "View webhook details",
+			Flags: []common.Flag{
+				{Name: "id", Short: "i", Usage: "Webhook ID", Required: true},
+			},
+			Run: func(ctx *common.RuntimeContext) error {
+				if err := ctx.ResolveOwnerRepo(); err != nil {
+					return err
+				}
+				id, err := ctx.RequireArg("id")
+				if err != nil {
+					return err
+				}
+				env, err := ctx.CallAPI("GET", webhookItemPath(ctx, id), nil)
 				if err != nil {
 					return err
 				}
@@ -25,59 +61,38 @@ func Shortcuts() []*common.Shortcut {
 		},
 		{
 			Name:        "create",
-			Description: "Create a webhook",
+			Description: "Create a repository webhook",
 			Flags: []common.Flag{
 				{Name: "url", Short: "u", Usage: "Webhook target URL", Required: true},
-				{Name: "type", Short: "t", Usage: "Webhook provider type", Default: "gitea"},
-				{Name: "events", Short: "e", Usage: "Comma-separated events, for example: push,create,delete", Required: true},
+				{Name: "events", Short: "e", Usage: "Comma-separated events, for example: push,issues_only", Required: true},
+				{Name: "type", Short: "t", Usage: "Webhook type: gitea/slack/discord/dingtalk/telegram/msteams/feishu/matrix/jianmu/softbot", Default: "gitea"},
+				{Name: "content-type", Usage: "Payload content type: json or form", Default: "json"},
+				{Name: "http-method", Usage: "HTTP method: POST or GET", Default: "POST"},
 				{Name: "secret", Short: "s", Usage: "Webhook secret"},
-				{Name: "content-type", Usage: "POST content type: json or form", Default: "json"},
-				{Name: "http-method", Usage: "Delivery method: GET or POST", Default: "POST"},
-				{Name: "branch-filter", Usage: "Branch filter glob", Default: "*"},
-				{Name: "active", Short: "a", Usage: "Enable webhook (true/false)", Default: "true"},
+				{Name: "branch-filter", Usage: "Branch glob filter for push/create/delete events", Default: "*"},
+				{Name: "active", Usage: "Whether the webhook is active: true or false", Default: "true"},
 			},
-			Run: runCreateWebhook,
-		},
-		{
-			Name:        "view",
-			Description: "Show webhook details",
-			Flags: []common.Flag{
-				{Name: "id", Short: "i", Usage: "Webhook ID", Required: true},
-			},
-			Run: func(ctx *common.RuntimeContext) error {
-				if err := ctx.ResolveOwnerRepo(); err != nil {
-					return err
-				}
-				id, err := ctx.RequireArg("id")
-				if err != nil {
-					return err
-				}
-				env, err := ctx.CallAPI("GET", fmt.Sprintf("%s/webhooks/%s", ctx.RepoPath(), id), nil)
-				if err != nil {
-					return err
-				}
-				return ctx.Output(env)
-			},
+			Run: runCreate,
 		},
 		{
 			Name:        "update",
-			Description: "Update a webhook",
+			Description: "Update a repository webhook while preserving unspecified fields when available",
 			Flags: []common.Flag{
 				{Name: "id", Short: "i", Usage: "Webhook ID", Required: true},
 				{Name: "url", Short: "u", Usage: "Webhook target URL"},
-				{Name: "type", Short: "t", Usage: "Webhook provider type"},
-				{Name: "events", Short: "e", Usage: "Comma-separated events"},
-				{Name: "secret", Short: "s", Usage: "Webhook secret"},
-				{Name: "content-type", Usage: "POST content type: json or form"},
-				{Name: "http-method", Usage: "Delivery method: GET or POST"},
-				{Name: "branch-filter", Usage: "Branch filter glob"},
-				{Name: "active", Short: "a", Usage: "Enable webhook (true/false)"},
+				{Name: "events", Short: "e", Usage: "Comma-separated events, for example: push,issues_only"},
+				{Name: "type", Short: "t", Usage: "Webhook type: gitea/slack/discord/dingtalk/telegram/msteams/feishu/matrix/jianmu/softbot"},
+				{Name: "content-type", Usage: "Payload content type: json or form"},
+				{Name: "http-method", Usage: "HTTP method: POST or GET"},
+				{Name: "secret", Short: "s", Usage: "Webhook secret. Pass it again if the server does not return existing secrets."},
+				{Name: "branch-filter", Usage: "Branch glob filter for push/create/delete events"},
+				{Name: "active", Usage: "Whether the webhook is active: true or false"},
 			},
-			Run: runUpdateWebhook,
+			Run: runUpdate,
 		},
 		{
 			Name:        "delete",
-			Description: "Delete a webhook",
+			Description: "Delete a repository webhook",
 			Flags: []common.Flag{
 				{Name: "id", Short: "i", Usage: "Webhook ID", Required: true},
 			},
@@ -89,7 +104,7 @@ func Shortcuts() []*common.Shortcut {
 				if err != nil {
 					return err
 				}
-				env, err := ctx.CallAPI("DELETE", fmt.Sprintf("%s/webhooks/%s", ctx.RepoPath(), id), nil)
+				env, err := ctx.CallAPI("DELETE", webhookItemPath(ctx, id), nil)
 				if err != nil {
 					return err
 				}
@@ -98,7 +113,7 @@ func Shortcuts() []*common.Shortcut {
 		},
 		{
 			Name:        "test",
-			Description: "Trigger a webhook test delivery",
+			Description: "Trigger a test delivery for a webhook",
 			Flags: []common.Flag{
 				{Name: "id", Short: "i", Usage: "Webhook ID", Required: true},
 			},
@@ -110,7 +125,28 @@ func Shortcuts() []*common.Shortcut {
 				if err != nil {
 					return err
 				}
-				env, err := ctx.CallAPI("POST", fmt.Sprintf("%s/webhooks/%s/tests", ctx.RepoPath(), id), nil)
+				env, err := ctx.CallAPI("POST", fmt.Sprintf("%s/tests", webhookItemPath(ctx, id)), nil)
+				if err != nil {
+					return err
+				}
+				return ctx.Output(env)
+			},
+		},
+		{
+			Name:        "tasks",
+			Description: "List webhook delivery tasks",
+			Flags: []common.Flag{
+				{Name: "id", Short: "i", Usage: "Webhook ID", Required: true},
+			},
+			Run: func(ctx *common.RuntimeContext) error {
+				if err := ctx.ResolveOwnerRepo(); err != nil {
+					return err
+				}
+				id, err := ctx.RequireArg("id")
+				if err != nil {
+					return err
+				}
+				env, err := ctx.CallAPI("GET", fmt.Sprintf("%s/hooktasks", webhookItemPath(ctx, id)), nil)
 				if err != nil {
 					return err
 				}
@@ -120,193 +156,214 @@ func Shortcuts() []*common.Shortcut {
 	}
 }
 
-func runCreateWebhook(ctx *common.RuntimeContext) error {
+func runCreate(ctx *common.RuntimeContext) error {
 	if err := ctx.ResolveOwnerRepo(); err != nil {
 		return err
 	}
-
-	payload, err := buildWebhookPayload(ctx, nil, true)
+	payload, err := webhookPayloadFromArgs(ctx, nil)
 	if err != nil {
 		return err
 	}
-	env, err := ctx.CallAPI("POST", ctx.RepoPath()+"/webhooks", payload)
+	env, err := ctx.CallAPI("POST", webhookPath(ctx), payload)
 	if err != nil {
 		return err
 	}
 	return ctx.Output(env)
 }
 
-func runUpdateWebhook(ctx *common.RuntimeContext) error {
+func runUpdate(ctx *common.RuntimeContext) error {
 	if err := ctx.ResolveOwnerRepo(); err != nil {
 		return err
 	}
-
 	id, err := ctx.RequireArg("id")
 	if err != nil {
 		return err
 	}
 
-	currentEnv, err := ctx.CallAPI("GET", fmt.Sprintf("%s/webhooks/%s", ctx.RepoPath(), id), nil)
+	current, err := fetchWebhook(ctx, id)
+	if err != nil {
+		return fmt.Errorf("fetch webhook: %w", err)
+	}
+	payload, err := webhookPayloadFromArgs(ctx, current)
 	if err != nil {
 		return err
 	}
-	current, _ := currentEnv.Data.(map[string]interface{})
-
-	payload, err := buildWebhookPayload(ctx, current, false)
-	if err != nil {
-		return err
-	}
-	env, err := ctx.CallAPI("PUT", fmt.Sprintf("%s/webhooks/%s", ctx.RepoPath(), id), payload)
+	env, err := ctx.CallAPI("PUT", webhookItemPath(ctx, id), payload)
 	if err != nil {
 		return err
 	}
 	return ctx.Output(env)
 }
 
-func buildWebhookPayload(ctx *common.RuntimeContext, current map[string]interface{}, requireEvents bool) (map[string]interface{}, error) {
-	payload := map[string]interface{}{}
+func webhookPath(ctx *common.RuntimeContext) string {
+	return fmt.Sprintf("/v1/%s/%s/webhooks", ctx.Owner, ctx.Repo)
+}
 
-	if v := ctx.Arg("type"); v != "" {
-		payload["type"] = v
-	} else if current != nil {
-		if v, ok := current["type"].(string); ok && v != "" {
-			payload["type"] = v
-		}
+func webhookItemPath(ctx *common.RuntimeContext, id string) string {
+	return fmt.Sprintf("%s/%s", webhookPath(ctx), id)
+}
+
+func fetchWebhook(ctx *common.RuntimeContext, id string) (map[string]interface{}, error) {
+	env, err := ctx.CallAPI("GET", webhookItemPath(ctx, id), nil)
+	if err != nil {
+		return nil, err
+	}
+	data, ok := env.Data.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("failed to parse webhook data")
+	}
+	return data, nil
+}
+
+func webhookPayloadFromArgs(ctx *common.RuntimeContext, current map[string]interface{}) (map[string]interface{}, error) {
+	url := firstNonEmpty(ctx.Arg("url"), stringFromMap(current, "url"))
+	if url == "" {
+		return nil, fmt.Errorf("required flag --url is missing")
 	}
 
-	if v := ctx.Arg("url"); v != "" {
-		payload["url"] = v
-	} else if current != nil {
-		if v, ok := current["url"].(string); ok && v != "" {
-			payload["url"] = v
-		}
-	}
-
-	if v := ctx.Arg("content-type"); v != "" {
-		payload["content_type"] = v
-	} else if current != nil {
-		if v, ok := current["content_type"].(string); ok && v != "" {
-			payload["content_type"] = v
-		}
-	}
-
-	if v := ctx.Arg("http-method"); v != "" {
-		payload["http_method"] = v
-	} else if current != nil {
-		if v, ok := current["http_method"].(string); ok && v != "" {
-			payload["http_method"] = v
-		}
-	}
-
-	if v := ctx.Arg("secret"); v != "" {
-		payload["secret"] = v
-	} else if current != nil {
-		if v, ok := current["secret"].(string); ok && v != "" {
-			payload["secret"] = v
-		}
-	}
-
-	if v := ctx.Arg("branch-filter"); v != "" {
-		payload["branch_filter"] = v
-	} else if current != nil {
-		if v, ok := current["branch_filter"].(string); ok && v != "" {
-			payload["branch_filter"] = v
-		}
-	}
-
-	eventsValue := ctx.Arg("events")
-	if eventsValue != "" {
-		events, err := parseCommaList(eventsValue)
+	eventValue := ctx.Arg("events")
+	var events []string
+	var err error
+	if eventValue != "" {
+		events, err = parseWebhookEvents(eventValue)
 		if err != nil {
 			return nil, err
 		}
-		payload["events"] = events
-	} else if current != nil {
-		if events, ok := normalizeStringSlice(current["events"]); ok {
-			payload["events"] = events
-		}
-	}
-
-	activeValue := ctx.Arg("active")
-	if activeValue != "" {
-		active, err := parseBoolString(activeValue)
+	} else {
+		events, err = eventsFromMap(current)
 		if err != nil {
 			return nil, err
 		}
-		payload["active"] = active
-	} else if current != nil {
-		if active, ok := current["active"].(bool); ok {
-			payload["active"] = active
-		}
+	}
+	if len(events) == 0 {
+		return nil, fmt.Errorf("required flag --events is missing")
 	}
 
-	if requireEvents {
-		if _, ok := payload["events"]; !ok {
-			return nil, fmt.Errorf("required flag --events is missing")
-		}
+	webhookType := strings.ToLower(firstNonEmpty(ctx.Arg("type"), stringFromMap(current, "type"), "gitea"))
+	if err := validateOneOf("type", webhookType, allowedWebhookTypes); err != nil {
+		return nil, err
+	}
+	contentType := strings.ToLower(firstNonEmpty(ctx.Arg("content-type"), stringFromMap(current, "content_type"), "json"))
+	if err := validateOneOf("content-type", contentType, allowedWebhookContentTypes); err != nil {
+		return nil, err
+	}
+	httpMethod := strings.ToUpper(firstNonEmpty(ctx.Arg("http-method"), stringFromMap(current, "http_method"), "POST"))
+	if err := validateOneOf("http-method", httpMethod, allowedWebhookMethods); err != nil {
+		return nil, err
+	}
+	branchFilter := firstNonEmpty(ctx.Arg("branch-filter"), stringFromMap(current, "branch_filter"), "*")
+	active, err := activeFromArgs(ctx.Arg("active"), current)
+	if err != nil {
+		return nil, err
 	}
 
-	if _, ok := payload["type"]; !ok {
-		payload["type"] = "gitea"
+	payload := map[string]interface{}{
+		"type":          webhookType,
+		"active":        active,
+		"content_type":  contentType,
+		"http_method":   httpMethod,
+		"url":           url,
+		"branch_filter": branchFilter,
+		"events":        events,
 	}
-	if _, ok := payload["content_type"]; !ok {
-		payload["content_type"] = "json"
+	if secret := firstNonEmpty(ctx.Arg("secret"), stringFromMap(current, "secret")); secret != "" {
+		payload["secret"] = secret
 	}
-	if _, ok := payload["http_method"]; !ok {
-		payload["http_method"] = "POST"
-	}
-	if _, ok := payload["branch_filter"]; !ok {
-		payload["branch_filter"] = "*"
-	}
-	if _, ok := payload["active"]; !ok {
-		payload["active"] = true
-	}
-
 	return payload, nil
 }
 
-func parseCommaList(value string) ([]string, error) {
-	items := strings.Split(value, ",")
-	results := make([]string, 0, len(items))
-	for _, item := range items {
-		value := strings.TrimSpace(item)
-		if value == "" {
+func parseWebhookEvents(value string) ([]string, error) {
+	parts := strings.Split(value, ",")
+	events := make([]string, 0, len(parts))
+	seen := map[string]bool{}
+	for _, part := range parts {
+		event := strings.TrimSpace(part)
+		if event == "" {
 			continue
 		}
-		results = append(results, value)
-	}
-	if len(results) == 0 {
-		return nil, fmt.Errorf("no values provided")
-	}
-	return results, nil
-}
-
-func normalizeStringSlice(value interface{}) ([]string, bool) {
-	switch v := value.(type) {
-	case []string:
-		return v, true
-	case []interface{}:
-		items := make([]string, 0, len(v))
-		for _, item := range v {
-			s, ok := item.(string)
-			if !ok {
-				continue
-			}
-			items = append(items, s)
+		if !allowedWebhookEvents[event] {
+			return nil, fmt.Errorf("invalid --events value %q", event)
 		}
-		return items, len(items) > 0
+		if seen[event] {
+			continue
+		}
+		seen[event] = true
+		events = append(events, event)
+	}
+	if len(events) == 0 {
+		return nil, fmt.Errorf("required flag --events is missing")
+	}
+	return events, nil
+}
+
+func eventsFromMap(values map[string]interface{}) ([]string, error) {
+	if values == nil {
+		return nil, nil
+	}
+	raw, ok := values["events"]
+	if !ok || raw == nil {
+		return nil, nil
+	}
+	switch events := raw.(type) {
+	case []interface{}:
+		result := make([]string, 0, len(events))
+		for _, event := range events {
+			name, ok := event.(string)
+			if !ok {
+				return nil, fmt.Errorf("failed to parse webhook events")
+			}
+			result = append(result, name)
+		}
+		return result, nil
+	case []string:
+		return events, nil
 	default:
-		return nil, false
+		return nil, fmt.Errorf("failed to parse webhook events")
 	}
 }
 
-func parseBoolString(value string) (bool, error) {
-	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "true", "1", "yes", "y", "on":
-		return true, nil
-	case "false", "0", "no", "n", "off":
-		return false, nil
-	default:
-		return false, fmt.Errorf("invalid boolean value %q: use true or false", value)
+func activeFromArgs(value string, current map[string]interface{}) (bool, error) {
+	if value != "" {
+		switch strings.ToLower(strings.TrimSpace(value)) {
+		case "true":
+			return true, nil
+		case "false":
+			return false, nil
+		default:
+			return false, fmt.Errorf("invalid --active value %q: use true or false", value)
+		}
 	}
+	if current != nil {
+		if active, ok := current["active"].(bool); ok {
+			return active, nil
+		}
+		if active, ok := current["is_active"].(bool); ok {
+			return active, nil
+		}
+	}
+	return true, nil
+}
+
+func stringFromMap(values map[string]interface{}, key string) string {
+	if values == nil {
+		return ""
+	}
+	value, _ := values[key].(string)
+	return value
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, value := range values {
+		if strings.TrimSpace(value) != "" {
+			return strings.TrimSpace(value)
+		}
+	}
+	return ""
+}
+
+func validateOneOf(name, value string, allowed map[string]bool) error {
+	if allowed[value] {
+		return nil
+	}
+	return fmt.Errorf("invalid --%s value %q", name, value)
 }

@@ -167,6 +167,9 @@ gitlink-cli webhook +create --owner Gitlink --repo forgeplus \
 
 # 测试 webhook
 gitlink-cli webhook +test --owner Gitlink --repo forgeplus --id 68
+
+# 查看 webhook 投递任务
+gitlink-cli webhook +tasks --owner Gitlink --repo forgeplus --id 68
 ```
 
 ### Issue 管理

@@ -156,6 +156,9 @@ gitlink-cli webhook +create --owner Gitlink --repo forgeplus \
 
 # Test a webhook
 gitlink-cli webhook +test --owner Gitlink --repo forgeplus --id 68
+
+# View webhook delivery tasks
+gitlink-cli webhook +tasks --owner Gitlink --repo forgeplus --id 68
 ```
 
 ### Issue Management

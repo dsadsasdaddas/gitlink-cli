@@ -20,6 +20,7 @@ metadata:
 | `webhook +update` | 更新 webhook |
 | `webhook +delete` | 删除 webhook |
 | `webhook +test` | 触发 webhook 测试投递 |
+| `webhook +tasks` | 查看 webhook 投递任务历史 |
 
 ## 使用示例
 
@@ -28,4 +29,5 @@ gitlink-cli webhook +list --owner Gitlink --repo forgeplus
 gitlink-cli webhook +create --owner Gitlink --repo forgeplus \
   --url https://example.com/hook --events push,create
 gitlink-cli webhook +test --owner Gitlink --repo forgeplus --id 68
+gitlink-cli webhook +tasks --owner Gitlink --repo forgeplus --id 68
 ```
