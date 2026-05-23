@@ -209,6 +209,13 @@ gitlink-cli pr +versions --owner Gitlink --repo forgeplus -i 42
 
 # View a patchset version diff
 gitlink-cli pr +version-diff --owner Gitlink --repo forgeplus -i 42 --version-id 16040
+
+# List PR reviews
+gitlink-cli pr +reviews --owner Gitlink --repo forgeplus -i 42
+
+# Create a PR review (with dry-run preview)
+gitlink-cli pr +review --owner Gitlink --repo forgeplus -i 42 --status approved -c "LGTM" --dry-run
+gitlink-cli pr +review --owner Gitlink --repo forgeplus -i 42 --status approved -c "LGTM"
 ```
 
 ### Branch Management

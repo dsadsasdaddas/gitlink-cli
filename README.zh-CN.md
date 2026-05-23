@@ -220,6 +220,13 @@ gitlink-cli pr +versions --owner Gitlink --repo forgeplus -i 42
 
 # 查看指定 patchset/version diff
 gitlink-cli pr +version-diff --owner Gitlink --repo forgeplus -i 42 --version-id 16040
+
+# 查看 PR 审查记录
+gitlink-cli pr +reviews --owner Gitlink --repo forgeplus -i 42
+
+# 创建 PR 审查（支持 dry-run 预览）
+gitlink-cli pr +review --owner Gitlink --repo forgeplus -i 42 --status approved -c "LGTM" --dry-run
+gitlink-cli pr +review --owner Gitlink --repo forgeplus -i 42 --status approved -c "LGTM"
 ```
 
 ### 发布管理

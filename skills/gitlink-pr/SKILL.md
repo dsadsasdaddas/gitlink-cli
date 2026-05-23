@@ -28,6 +28,8 @@ metadata:
 | `pr +diff` | 查看变更文件和 diff 内容 | 否 |
 | `pr +versions` | 查看 PR patchset/version 列表 | 否 |
 | `pr +version-diff` | 查看指定 patchset/version diff | 否 |
+| `pr +reviews` | 查看 PR 审查记录，支持状态过滤 | 否 |
+| `pr +review` | 创建 PR 审查（支持 dry-run 预览） | 是 |
 | `pr +comment` | 给 PR 添加评论 | 是 |
 
 ## 使用示例
@@ -58,6 +60,14 @@ gitlink-cli pr +versions --id 3
 # 查看指定 patchset/version diff
 gitlink-cli pr +version-diff --id 3 --version-id 16040
 gitlink-cli pr +version-diff --id 3 --version-id 16040 --file shortcuts/pr/pr.go
+
+# 查看 PR 审查记录（支持按状态过滤）
+gitlink-cli pr +reviews --id 3
+gitlink-cli pr +reviews --id 3 --status approved
+
+# 创建 PR 审查（common/approved/rejected，支持 --dry-run 预览）
+gitlink-cli pr +review --id 3 --status approved --content "LGTM, ready to merge"
+gitlink-cli pr +review --id 3 --status approved --content "LGTM" --dry-run
 
 # 给 PR 添加评论
 gitlink-cli pr +comment --id 3 --body "LGTM, ready to merge"
@@ -125,7 +135,11 @@ gitlink-cli api PUT /:owner/:repo/update_file --body '{"filepath":"file.md","con
 gitlink-cli api POST /:owner/:repo/pulls/check_can_merge --body '{"head":"dev","base":"main"}'
 
 # 创建 Review
-gitlink-cli api POST /:owner/:repo/pulls/:id/reviews --body '{"body":"LGTM","event":"APPROVE"}'
+gitlink-cli api POST /v1/:owner/:repo/pulls/:id/reviews --body '{"content":"LGTM","status":"approved"}'
+
+# 查看 Review 列表（支持 status 过滤）
+gitlink-cli api GET /v1/:owner/:repo/pulls/:id/reviews
+gitlink-cli api GET /v1/:owner/:repo/pulls/:id/reviews?status=approved
 
 # 获取可用分支
 gitlink-cli api GET /:owner/:repo/pulls/get_branches
