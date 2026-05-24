@@ -280,6 +280,12 @@ gitlink-cli api GET /users/me
 # POST 请求
 gitlink-cli api POST /Gitlink/forgeplus/issues --body '{"subject":"test","description":"..."}'
 
+# 从文件读取 JSON body
+gitlink-cli api POST /Gitlink/forgeplus/issues --body-file issue.json
+
+# 从 stdin 读取 JSON body
+Get-Content issue.json | gitlink-cli api POST /Gitlink/forgeplus/issues --body-stdin
+
 # 带查询参数
 gitlink-cli api GET /Gitlink/forgeplus/commits --query 'page=1&limit=5'
 ```
