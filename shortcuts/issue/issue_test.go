@@ -154,6 +154,29 @@ func TestIssueAssignersShortcutWithKeyword(t *testing.T) {
 	}
 }
 
+func TestIssueAuthorsShortcutWithKeyword(t *testing.T) {
+	server := newIssueTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" || r.URL.Path != "/v1/owner/repo/issue_authors.json" {
+			t.Fatalf("unexpected request: %s %s", r.Method, r.URL.Path)
+		}
+		assertEqual(t, r.URL.Query().Get("keyword"), "bob")
+		writeJSON(t, w, map[string]interface{}{
+			"total_count": 1,
+			"authors": []map[string]interface{}{
+				{"id": 8, "name": "Bob", "login": "bob"},
+			},
+		})
+	})
+	defer server.Close()
+
+	err := runIssueShortcut(t, server, "authors", map[string]string{
+		"keyword": "bob",
+	})
+	if err != nil {
+		t.Fatalf("authors shortcut failed: %v", err)
+	}
+}
+
 func runIssueShortcut(t *testing.T, server *httptest.Server, name string, args map[string]string) error {
 	t.Helper()
 	shortcut := findIssueShortcut(t, name)

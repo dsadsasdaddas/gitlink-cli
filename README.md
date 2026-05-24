@@ -201,6 +201,9 @@ gitlink-cli issue +comment --owner Gitlink --repo forgeplus -i 123 -b "Fixed"
 
 # List issue assigners
 gitlink-cli issue +assigners --owner Gitlink --repo forgeplus
+
+# List issue authors
+gitlink-cli issue +authors --owner Gitlink --repo forgeplus
 ```
 
 ### Pull Requests

@@ -28,6 +28,7 @@ metadata:
 | `issue +batch-close` | 批量关闭 Issue，支持 `--dry-run` 预览 | 是（dry-run 不写入） |
 | `issue +comment` | 添加评论 | 是 |
 | `issue +assigners` | 查询 Issue 负责人列表 | 否（公开项目） |
+| `issue +authors` | 查询 Issue 发布人列表 | 否（公开项目） |
 
 ## 使用示例
 
@@ -58,6 +59,9 @@ gitlink-cli issue +comment --number 4 --body "已修复，请验证"
 
 # 查询 Issue 负责人
 gitlink-cli issue +assigners --owner Gitlink --repo forgeplus --keyword alice
+
+# 查询 Issue 发布人
+gitlink-cli issue +authors --owner Gitlink --repo forgeplus --keyword bob
 ```
 
 ## Raw API 补充

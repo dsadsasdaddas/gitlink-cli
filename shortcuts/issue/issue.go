@@ -244,6 +244,27 @@ func Shortcuts() []*common.Shortcut {
 				return ctx.Output(env)
 			},
 		},
+		{
+			Name:        "authors",
+			Description: "List issue authors",
+			Flags: []common.Flag{
+				{Name: "keyword", Short: "k", Usage: "Search keyword"},
+			},
+			Run: func(ctx *common.RuntimeContext) error {
+				if err := ctx.ResolveOwnerRepo(); err != nil {
+					return err
+				}
+				q := url.Values{}
+				if keyword := ctx.Arg("keyword"); keyword != "" {
+					q.Set("keyword", keyword)
+				}
+				env, err := ctx.CallAPIWithQuery("GET", v1RepoPath(ctx)+"/issue_authors", q)
+				if err != nil {
+					return err
+				}
+				return ctx.Output(env)
+			},
+		},
 	}
 }
 

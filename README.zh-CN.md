@@ -212,6 +212,9 @@ gitlink-cli issue +comment --owner Gitlink --repo forgeplus -i 123 -b "已修复
 
 # 列出 Issue 负责人
 gitlink-cli issue +assigners --owner Gitlink --repo forgeplus
+
+# 列出 Issue 发布人
+gitlink-cli issue +authors --owner Gitlink --repo forgeplus
 ```
 
 ### Pull Request
