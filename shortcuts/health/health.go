@@ -1,13 +1,18 @@
 package health
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
+	"sync"
 
 	"github.com/gitlink-org/gitlink-cli/internal/i18n"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/common"
+	"golang.org/x/sync/errgroup"
+	"golang.org/x/time/rate"
 )
 
 func Shortcuts(translators ...*i18n.Translator) []*common.Shortcut {
@@ -24,7 +29,6 @@ func Shortcuts(translators ...*i18n.Translator) []*common.Shortcut {
 					return err
 				}
 
-				// maxPages: 0 means unlimited
 				maxPages := 0
 				if v := ctx.Arg("max-pages"); v != "" {
 					if n, err := strconv.Atoi(v); err == nil && n > 0 {
@@ -51,109 +55,145 @@ func Shortcuts(translators ...*i18n.Translator) []*common.Shortcut {
 					return fmt.Errorf("create repo: %w", err)
 				}
 
-				// ── Fetch PRs ──
+				limiter := rate.NewLimiter(rate.Limit(1.0/0.6), 5)
+
+				s := &sharedState{
+					seenPRs:    make(map[int]bool),
+					seenIssues: make(map[int]bool),
+				}
+
 				fmt.Fprintf(os.Stderr, "\n=== Fetching Pull Requests ===\n")
-				seenPRIDs := make(map[int]bool)
-				var prAgg map[string]interface{}
+				fmt.Fprintf(os.Stderr, "=== Fetching Issues ===\n")
+
+				g, egCtx := errgroup.WithContext(context.Background())
 
 				for _, state := range []string{"open", "closed", "merged"} {
-					page := 1
-					for maxPages == 0 || page <= maxPages {
-						fmt.Fprintf(os.Stderr, "  PR list: state=%s, page=%d...\n", state, page)
-						prs, agg := fetchPRListPage(ctx, state, page, 20)
-						if agg != nil {
-							prAgg = agg
-						}
-						if len(prs) == 0 {
-							break
-						}
-						for _, item := range prs {
-							pr, ok := item.(map[string]interface{})
-							if !ok {
-								continue
-							}
-							var prID int
-							if v, ok := pr["pull_request_id"].(float64); ok && v > 0 {
-								prID = int(v)
-							} else if v, ok := pr["id"].(float64); ok {
-								prID = int(v)
-							} else {
-								continue
-							}
-							if seenPRIDs[prID] {
-								continue
-							}
-							seenPRIDs[prID] = true
-							savePull(db, repoID, pr)
-						}
-						if len(prs) < 20 {
-							break
-						}
-						page++
-						sleep()
-					}
+					state := state
+					g.Go(func() error {
+						return fetchPRs(ctx, db, repoID, state, maxPages, limiter, egCtx, s)
+					})
 				}
-
-				fmt.Fprintf(os.Stderr, "  Total PRs: %d\n", len(seenPRIDs))
-				if prAgg != nil {
-					fmt.Fprintf(os.Stderr, "  API aggregates: total=%v, merged=%v, open=%v, closed=%v\n",
-						prAgg["search_count"], prAgg["merged_issues_size"],
-						prAgg["open_count"], prAgg["close_count"])
-				}
-
-				// ── Fetch Issues ──
-				fmt.Fprintf(os.Stderr, "\n=== Fetching Issues ===\n")
-				seenIssueIDs := make(map[int]bool)
-				var issueAgg map[string]interface{}
-
 				for _, state := range []string{"open", "closed"} {
-					page := 1
-					for maxPages == 0 || page <= maxPages {
-						fmt.Fprintf(os.Stderr, "  Issue list: state=%s, page=%d...\n", state, page)
-						issues, agg := fetchIssueListPage(ctx, ctx.Owner, ctx.Repo, state, page, 20)
-						if agg != nil {
-							issueAgg = agg
-						}
-						if len(issues) == 0 {
-							break
-						}
-						for _, item := range issues {
-							issue, ok := item.(map[string]interface{})
-							if !ok {
-								continue
-							}
-							issueID, ok := issue["id"].(float64)
-							if !ok || seenIssueIDs[int(issueID)] {
-								continue
-							}
-							seenIssueIDs[int(issueID)] = true
-
-							// Get issue number (project_issues_index) from list item
-							issueNumber := int(issueID)
-							if v, ok := issue["project_issues_index"].(float64); ok && v > 0 {
-								issueNumber = int(v)
-							}
-
-							listUpdatedAt, _ := issue["updated_at"].(string)
-							saveIssue(db, repoID, issue, issueNumber, listUpdatedAt)
-						}
-						if len(issues) < 20 {
-							break
-						}
-						page++
-						sleep()
-					}
+					state := state
+					g.Go(func() error {
+						return fetchIssues(ctx, db, repoID, state, maxPages, limiter, egCtx, s)
+					})
 				}
 
-				fmt.Fprintf(os.Stderr, "  Total Issues: %d\n", len(seenIssueIDs))
-				if issueAgg != nil {
-					fmt.Fprintf(os.Stderr, "  API aggregates: total=%v, open=%v, closed=%v\n",
-						issueAgg["total_count"], issueAgg["opened_count"], issueAgg["closed_count"])
+				if err := g.Wait(); err != nil {
+					return err
 				}
+
+				fmt.Fprintf(os.Stderr, "  Total PRs: %d\n", s.prCount)
+
+				fmt.Fprintf(os.Stderr, "  Total Issues: %d\n", s.issueCount)
 
 				fmt.Fprintf(os.Stderr, "\nData saved to %s\n", dbPath)
 				return nil
 			},
 		},
 	}
+}
+
+type sharedState struct {
+	mu         sync.Mutex
+	seenPRs    map[int]bool
+	seenIssues map[int]bool
+	prCount    int
+	issueCount int
+}
+
+func fetchPRs(ctx *common.RuntimeContext, db *sql.DB, repoID int, state string, maxPages int, limiter *rate.Limiter, egCtx context.Context, s *sharedState) error {
+	page := 1
+	for maxPages == 0 || page <= maxPages {
+		if egCtx.Err() != nil {
+			return nil
+		}
+		if err := limiter.Wait(egCtx); err != nil {
+			return nil
+		}
+		fmt.Fprintf(os.Stderr, "  PR list: state=%s, page=%d...\n", state, page)
+		prs, _ := fetchPRListPage(ctx, state, page, 20)
+		if len(prs) == 0 {
+			break
+		}
+		for _, item := range prs {
+			pr, ok := item.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			var prID int
+			if v, ok := pr["pull_request_id"].(float64); ok && v > 0 {
+				prID = int(v)
+			} else if v, ok := pr["id"].(float64); ok {
+				prID = int(v)
+			} else {
+				continue
+			}
+			s.mu.Lock()
+			dup := s.seenPRs[prID]
+			if !dup {
+				s.seenPRs[prID] = true
+				s.prCount++
+			}
+			s.mu.Unlock()
+			if dup {
+				continue
+			}
+			savePull(db, repoID, pr)
+		}
+		if len(prs) < 20 {
+			break
+		}
+		page++
+	}
+	return nil
+}
+
+func fetchIssues(ctx *common.RuntimeContext, db *sql.DB, repoID int, state string, maxPages int, limiter *rate.Limiter, egCtx context.Context, s *sharedState) error {
+	page := 1
+	for maxPages == 0 || page <= maxPages {
+		if egCtx.Err() != nil {
+			return nil
+		}
+		if err := limiter.Wait(egCtx); err != nil {
+			return nil
+		}
+		fmt.Fprintf(os.Stderr, "  Issue list: state=%s, page=%d...\n", state, page)
+		issues, _ := fetchIssueListPage(ctx, ctx.Owner, ctx.Repo, state, page, 20)
+		if len(issues) == 0 {
+			break
+		}
+		for _, item := range issues {
+			issue, ok := item.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			issueID, ok := issue["id"].(float64)
+			if !ok {
+				continue
+			}
+			s.mu.Lock()
+			dup := s.seenIssues[int(issueID)]
+			if !dup {
+				s.seenIssues[int(issueID)] = true
+				s.issueCount++
+			}
+			s.mu.Unlock()
+			if dup {
+				continue
+			}
+			issueNumber := int(issueID)
+			if v, ok := issue["project_issues_index"].(float64); ok && v > 0 {
+				issueNumber = int(v)
+			}
+			listUpdatedAt, _ := issue["updated_at"].(string)
+			saveIssue(db, repoID, issue, issueNumber, listUpdatedAt)
+		}
+		if len(issues) < 20 {
+			break
+		}
+		page++
+	}
+	return nil
 }

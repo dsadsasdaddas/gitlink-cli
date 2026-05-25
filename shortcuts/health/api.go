@@ -3,7 +3,6 @@ package health
 import (
 	"fmt"
 	"net/url"
-	"time"
 
 	"github.com/gitlink-org/gitlink-cli/shortcuts/common"
 )
@@ -58,8 +57,4 @@ func fetchIssueListPage(ctx *common.RuntimeContext, owner, repo, state string, p
 	}
 	issues, _ := data["issues"].([]interface{})
 	return issues, data
-}
-
-func sleep() {
-	time.Sleep(300 * time.Millisecond)
 }

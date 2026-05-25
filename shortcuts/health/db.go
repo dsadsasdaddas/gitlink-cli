@@ -57,17 +57,15 @@ func getOrCreateUser(db *sql.DB, username string) (int, error) {
 	if username == "" {
 		return 0, nil
 	}
-	var id int
-	err := db.QueryRow("SELECT id FROM users WHERE user_name = ?", username).Scan(&id)
-	if err == nil {
-		return id, nil
-	}
-	res, err := db.Exec("INSERT INTO users (user_name) VALUES (?)", username)
-	if err != nil {
+	if _, err := db.Exec("INSERT OR IGNORE INTO users (user_name) VALUES (?)", username); err != nil {
 		return 0, fmt.Errorf("insert user %q: %w", username, err)
 	}
-	lastID, _ := res.LastInsertId()
-	return int(lastID), nil
+	var id int
+	err := db.QueryRow("SELECT id FROM users WHERE user_name = ?", username).Scan(&id)
+	if err != nil {
+		return 0, fmt.Errorf("get user %q: %w", username, err)
+	}
+	return id, nil
 }
 
 func getOrCreateRepo(db *sql.DB, repoName, owner string) (int, error) {
@@ -89,17 +87,15 @@ func getOrCreateRepo(db *sql.DB, repoName, owner string) (int, error) {
 }
 
 func getOrCreateTag(db *sql.DB, repoID int, tagName string) (int, error) {
-	var id int
-	err := db.QueryRow("SELECT id FROM tags WHERE repo_id = ? AND name = ?", repoID, tagName).Scan(&id)
-	if err == nil {
-		return id, nil
-	}
-	res, err := db.Exec("INSERT INTO tags (repo_id, name) VALUES (?, ?)", repoID, tagName)
-	if err != nil {
+	if _, err := db.Exec("INSERT OR IGNORE INTO tags (repo_id, name) VALUES (?, ?)", repoID, tagName); err != nil {
 		return 0, fmt.Errorf("insert tag %q for repo %d: %w", tagName, repoID, err)
 	}
-	lastID, _ := res.LastInsertId()
-	return int(lastID), nil
+	var id int
+	err := db.QueryRow("SELECT id FROM tags WHERE repo_id = ? AND name = ?", repoID, tagName).Scan(&id)
+	if err != nil {
+		return 0, fmt.Errorf("get tag %q for repo %d: %w", tagName, repoID, err)
+	}
+	return id, nil
 }
 
 func savePullTags(db *sql.DB, pullID int, tagIDs []int) {
