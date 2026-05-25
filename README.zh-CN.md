@@ -5,7 +5,7 @@
 [![Go Version](https://img.shields.io/badge/Go-1.26%2B-blue.svg)](https://golang.org)
 [![npm version](https://img.shields.io/npm/v/@gitlink-ai/cli.svg)](https://www.npmjs.com/package/@gitlink-ai/cli)
 
-[GitLink（确实开源）](https://www.gitlink.org.cn) 官方 CLI 工具 — 为人类和 AI Agent 双重设计。支持 **macOS、Linux、Windows**，覆盖仓库管理、Issue 追踪、Pull Request、Webhook、CI/CD 和 AI 自动化工作流，包含 40+ 命令和 13 个 AI Agent [Skills](./skills/)。
+[GitLink（确实开源）](https://www.gitlink.org.cn) 官方 CLI 工具 — 为人类和 AI Agent 双重设计。支持 **macOS、Linux、Windows**，覆盖仓库管理、Issue 追踪、Pull Request、Webhook、成员协作、CI/CD 和 AI 自动化工作流，包含 40+ 命令和 AI Agent [Skills](./skills/)。
 
 **[English](./README.md)**
 
@@ -27,8 +27,8 @@
 
 ## 为什么选择 gitlink-cli？
 
-- **Agent-Native 设计** — 开箱即用 13 个结构化 [Skills](./skills/)，兼容 Claude Code — Agent 零配置即可操作 GitLink
-- **广泛覆盖** — 仓库、Issue、PR、Webhook、分支、Release、CI、组织、搜索、用户 — 核心功能全覆盖
+- **Agent-Native 设计** — 开箱即用结构化 [Skills](./skills/)，兼容 Claude Code — Agent 零配置即可操作 GitLink
+- **广泛覆盖** — 仓库、Issue、PR、Webhook、成员、分支、Release、CI、组织、搜索、用户等常用工作流均提供高层命令
 - **AI 友好 & 优化** — 每条命令都经过真实 Agent 测试，简洁参数、智能默认值、结构化输出
 - **跨平台** — macOS、Linux、Windows (x64/arm64) 全支持，`npm` 一条命令安装
 - **开源零门槛** — 木兰宽松许可证第2版（MulanPSL-2.0），`npm install` 即用
@@ -43,6 +43,7 @@
 | 📦 仓库 | 列出、创建、Fork、删除仓库，查看仓库信息 |
 | 🐛 Issue | 创建、更新、关闭、批量关闭、评论 Issue |
 | 🔀 PR | 创建、合并、Review Pull Request，查看变更文件 |
+| 👥 成员 | 列出、添加、移除仓库成员，调整角色，生成和接受邀请链接 |
 | 🌿 分支 | 创建、删除、保护分支 |
 | 🏷️ 发布 | 创建、查看、删除 Release |
 | 🏢 组织 | 管理组织、成员、团队 |
@@ -186,6 +187,28 @@ gitlink-cli webhook +test --owner Gitlink --repo forgeplus --id 68
 gitlink-cli webhook +tasks --owner Gitlink --repo forgeplus --id 68
 ```
 
+### 成员管理
+
+```bash
+# 列出仓库成员
+gitlink-cli member +list --owner Gitlink --repo forgeplus
+
+# 添加成员
+gitlink-cli member +add --owner Gitlink --repo forgeplus --user-id 101
+
+# 预览批量添加成员，不修改数据
+gitlink-cli member +batch-add --owner Gitlink --repo forgeplus --user-ids 101,102 --dry-run
+
+# 从 CSV 文件批量添加成员
+gitlink-cli member +batch-add --owner Gitlink --repo forgeplus --from members.csv
+
+# 调整成员权限
+gitlink-cli member +role --owner Gitlink --repo forgeplus --user-id 101 --role Developer
+
+# 生成邀请链接
+gitlink-cli member +invite-link --owner Gitlink --repo forgeplus --role developer --apply true
+```
+
 ### Issue 管理
 
 ```bash
@@ -317,7 +340,7 @@ git push gitlink
 
 ## AI Agent Skills
 
-`skills/` 目录包含 13 个 Claude Code Agent Skill 文件，支持 AI 自动化操作 GitLink 平台。
+`skills/` 目录包含 Claude Code Agent Skill 文件，支持 AI 自动化操作 GitLink 平台。
 
 详见 [skills/README.md](skills/README.md)
 
@@ -327,6 +350,7 @@ git push gitlink
 | `gitlink-repo` | 仓库操作（创建、查看、删除、Fork 等） |
 | `gitlink-issue` | Issue 操作（创建、更新、关闭、评论等） |
 | `gitlink-pr` | Pull Request 操作（创建、合并、Review 等） |
+| `gitlink-member` | 仓库成员与邀请链接管理 |
 | `gitlink-release` | 发布管理（创建、查看、删除等） |
 | `gitlink-org` | 组织管理（成员、团队等） |
 | `gitlink-ci` | CI/CD 操作（构建、日志等） |
@@ -356,6 +380,7 @@ gitlink-cli/
 │   ├── repo/                 # 仓库 shortcuts
 │   ├── issue/                # Issue shortcuts
 │   ├── pr/                   # PR shortcuts
+│   ├── member/               # 仓库成员 shortcuts
 │   ├── branch/               # 分支 shortcuts
 │   ├── release/              # Release shortcuts
 │   ├── org/                  # 组织 shortcuts
