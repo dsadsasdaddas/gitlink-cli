@@ -5,7 +5,7 @@
 [![Go Version](https://img.shields.io/badge/Go-1.26%2B-blue.svg)](https://golang.org)
 [![npm version](https://img.shields.io/npm/v/@gitlink-ai/cli.svg)](https://www.npmjs.com/package/@gitlink-ai/cli)
 
-The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans and AI Agents. Supports **macOS, Linux, and Windows**. Covers repository management, issue tracking, pull requests, webhooks, CI/CD, and AI-powered workflows, with 40+ commands and 13 AI Agent [Skills](./skills/).
+The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans and AI Agents. Supports **macOS, Linux, and Windows**. Covers repository management, issue tracking, pull requests, webhooks, member collaboration, CI/CD, and AI-powered workflows, with 40+ commands and AI Agent [Skills](./skills/).
 
 **[中文文档](./README.zh-CN.md)**
 
@@ -27,8 +27,8 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 
 ## Why gitlink-cli?
 
-- **Agent-Native Design** — 13 structured [Skills](./skills/) out of the box, compatible with Claude Code, OpenClaw, and other AI platforms — Agents can operate GitLink with zero extra setup
-- **Wide Coverage** — Repository, Issue, PR, Webhook, Branch, Release, CI, Org, Search, User — all core domains covered
+- **Agent-Native Design** — Structured [Skills](./skills/) out of the box, compatible with Claude Code, OpenClaw, and other AI platforms — Agents can operate GitLink with zero extra setup
+- **Wide Coverage** — Repository, Issue, PR, Webhook, Member, Branch, Release, CI, Org, Search, and User workflows are covered by high-level commands
 - **AI-Friendly & Optimized** — Every command is tested with real Agents, featuring concise parameters, smart defaults, and structured output
 - **Cross-Platform** — Runs on macOS, Linux, and Windows (x64/arm64), install via `npm install -g @gitlink-ai/cli` in one command, binary auto-downloaded
 - **Open Source, Zero Barriers** — MulanPSL-2.0 license, ready to use, just `npm install`
@@ -43,6 +43,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 | 📦 Repo | List, create, fork, delete repositories, view repo info |
 | 🐛 Issue | Create, update, close, batch close, comment on issues |
 | 🔀 PR | Create, merge, review pull requests, view changed files |
+| 👥 Member | List, add, remove repository members, change roles, create and accept invite links |
 | 🌿 Branch | Create, delete, list, protect, unprotect branches |
 | 🏷️ Release | Create, view, delete releases |
 | 🏢 Org | Manage organizations, members, teams |
@@ -70,7 +71,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 **From npm (recommended):**
 
 ```bash
-# One command: installs CLI binary + all 13 AI Agent Skills
+# One command: installs CLI binary + AI Agent Skills
 npm install -g @gitlink-ai/cli
 ```
 
@@ -176,6 +177,28 @@ gitlink-cli webhook +test --owner Gitlink --repo forgeplus --id 68
 
 # View webhook delivery tasks
 gitlink-cli webhook +tasks --owner Gitlink --repo forgeplus --id 68
+```
+
+### Member Management
+
+```bash
+# List repository members
+gitlink-cli member +list --owner Gitlink --repo forgeplus
+
+# Add a member
+gitlink-cli member +add --owner Gitlink --repo forgeplus --user-id 101
+
+# Preview batch add without changing data
+gitlink-cli member +batch-add --owner Gitlink --repo forgeplus --user-ids 101,102 --dry-run
+
+# Batch add members from a CSV file
+gitlink-cli member +batch-add --owner Gitlink --repo forgeplus --from members.csv
+
+# Change a member role
+gitlink-cli member +role --owner Gitlink --repo forgeplus --user-id 101 --role Developer
+
+# Create an invite link
+gitlink-cli member +invite-link --owner Gitlink --repo forgeplus --role developer --apply true
 ```
 
 ### Issue Management
@@ -440,7 +463,7 @@ git push gitlink
 
 ## AI Agent Skills
 
-The `skills/` directory contains 12 Agent Skill files for AI-automated GitLink operations.
+The `skills/` directory contains Agent Skill files for AI-automated GitLink operations.
 
 See [skills/README.md](skills/README.md) for details.
 
@@ -450,6 +473,7 @@ See [skills/README.md](skills/README.md) for details.
 | `gitlink-repo` | Repository operations (create, view, delete, fork, etc.) |
 | `gitlink-issue` | Issue operations (create, update, close, comment, etc.) |
 | `gitlink-pr` | Pull request operations (create, merge, review, etc.) |
+| `gitlink-member` | Repository member and invite link management |
 | `gitlink-branch` | Branch management (create, delete, list, protect, unprotect) |
 | `gitlink-release` | Release management (create, view, delete, etc.) |
 | `gitlink-ci` | CI/CD operations (builds, logs, etc.) |
@@ -480,6 +504,7 @@ gitlink-cli/
 │   ├── repo/                 # Repository shortcuts
 │   ├── issue/                # Issue shortcuts
 │   ├── pr/                   # PR shortcuts
+│   ├── member/               # Repository member shortcuts
 │   ├── branch/               # Branch shortcuts
 │   ├── release/              # Release shortcuts
 │   ├── org/                  # Organization shortcuts
