@@ -255,6 +255,9 @@ gitlink-cli pr +view --owner Gitlink --repo forgeplus -i 42
 # 合并 PR
 gitlink-cli pr +merge --owner Gitlink --repo forgeplus -i 42
 
+# 重开已关闭的 PR
+gitlink-cli pr +reopen --owner Gitlink --repo forgeplus -i 42
+
 # 查看 PR 变更文件
 gitlink-cli pr +files --owner Gitlink --repo forgeplus -i 42
 
@@ -305,6 +308,12 @@ gitlink-cli api GET /users/me
 
 # POST 请求
 gitlink-cli api POST /Gitlink/forgeplus/issues --body '{"subject":"test","description":"..."}'
+
+# 从文件读取 JSON body
+gitlink-cli api POST /Gitlink/forgeplus/issues --body-file issue.json
+
+# 从 stdin 读取 JSON body
+Get-Content issue.json | gitlink-cli api POST /Gitlink/forgeplus/issues --body-stdin
 
 # 带查询参数
 gitlink-cli api GET /Gitlink/forgeplus/commits --query 'page=1&limit=5'

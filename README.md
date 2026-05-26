@@ -244,6 +244,9 @@ gitlink-cli pr +view --owner Gitlink --repo forgeplus -i 42
 # Merge a PR
 gitlink-cli pr +merge --owner Gitlink --repo forgeplus -i 42
 
+# Reopen a closed PR
+gitlink-cli pr +reopen --owner Gitlink --repo forgeplus -i 42
+
 # View changed files
 gitlink-cli pr +files --owner Gitlink --repo forgeplus -i 42
 
@@ -425,6 +428,12 @@ gitlink-cli api GET /users/me
 
 # POST request
 gitlink-cli api POST /Gitlink/forgeplus/issues --body '{"subject":"test","description":"..."}'
+
+# POST request with body from a file
+gitlink-cli api POST /Gitlink/forgeplus/issues --body-file issue.json
+
+# POST request with body from stdin
+Get-Content issue.json | gitlink-cli api POST /Gitlink/forgeplus/issues --body-stdin
 
 # With query parameters
 gitlink-cli api GET /Gitlink/forgeplus/commits --query 'page=1&limit=5'
