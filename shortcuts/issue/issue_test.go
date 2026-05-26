@@ -131,6 +131,52 @@ func TestBatchClosePreservesCurrentDescription(t *testing.T) {
 	assertEqual(t, updatePayload["status_id"], float64(5))
 }
 
+func TestIssueAssignersShortcutWithKeyword(t *testing.T) {
+	server := newIssueTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" || r.URL.Path != "/v1/owner/repo/issue_assigners.json" {
+			t.Fatalf("unexpected request: %s %s", r.Method, r.URL.Path)
+		}
+		assertEqual(t, r.URL.Query().Get("keyword"), "alice")
+		writeJSON(t, w, map[string]interface{}{
+			"total_count": 1,
+			"assigners": []map[string]interface{}{
+				{"id": 7, "name": "Alice", "login": "alice"},
+			},
+		})
+	})
+	defer server.Close()
+
+	err := runIssueShortcut(t, server, "assigners", map[string]string{
+		"keyword": "alice",
+	})
+	if err != nil {
+		t.Fatalf("assigners shortcut failed: %v", err)
+	}
+}
+
+func TestIssueAuthorsShortcutWithKeyword(t *testing.T) {
+	server := newIssueTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" || r.URL.Path != "/v1/owner/repo/issue_authors.json" {
+			t.Fatalf("unexpected request: %s %s", r.Method, r.URL.Path)
+		}
+		assertEqual(t, r.URL.Query().Get("keyword"), "bob")
+		writeJSON(t, w, map[string]interface{}{
+			"total_count": 1,
+			"authors": []map[string]interface{}{
+				{"id": 8, "name": "Bob", "login": "bob"},
+			},
+		})
+	})
+	defer server.Close()
+
+	err := runIssueShortcut(t, server, "authors", map[string]string{
+		"keyword": "bob",
+	})
+	if err != nil {
+		t.Fatalf("authors shortcut failed: %v", err)
+	}
+}
+
 func runIssueShortcut(t *testing.T, server *httptest.Server, name string, args map[string]string) error {
 	t.Helper()
 	shortcut := findIssueShortcut(t, name)
