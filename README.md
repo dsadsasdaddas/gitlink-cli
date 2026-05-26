@@ -151,6 +151,9 @@ gitlink-cli repo +list
 # View repository info
 gitlink-cli repo +info --owner Gitlink --repo forgeplus
 
+# Read repository README
+gitlink-cli repo +readme --owner Gitlink --repo forgeplus --ref master
+
 # Create a repository
 gitlink-cli repo +create -n my-project -d "Project description"
 
