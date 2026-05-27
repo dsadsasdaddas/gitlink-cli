@@ -88,6 +88,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 | Category | Capabilities |
 |----------|-------------|
 | 📦 Repo | List, create, fork, delete repositories, view repo info, insights, and interactions |
+| Code | Browse repository files, trees, blobs, commits, blame, and tags |
 | 🐛 Issue | Create, update, close, batch close, comment on issues |
 | 🔖 Label | Create, list, update, delete issue labels |
 | 🔀 PR | Create, merge, review pull requests, view changed files |
@@ -232,6 +233,32 @@ gitlink-cli repo +create -n my-project -d "Project description"
 
 # Fork a repository
 gitlink-cli repo +fork --owner Gitlink --repo forgeplus
+```
+
+### Code Browsing
+
+```bash
+# Search repository files
+gitlink-cli code +files --owner Gitlink --repo forgeplus --search README --ref master
+
+# List root entries or inspect a path
+gitlink-cli code +entries --owner Gitlink --repo forgeplus --ref master
+gitlink-cli code +sub-entries --owner Gitlink --repo forgeplus --path docs --ref master
+
+# Read git object data
+gitlink-cli code +tree --owner Gitlink --repo forgeplus --sha master --recursive
+gitlink-cli code +blob --owner Gitlink --repo forgeplus --sha <blob-sha>
+
+# Inspect commits
+gitlink-cli code +commits --owner Gitlink --repo forgeplus --sha master
+gitlink-cli code +commit-files --owner Gitlink --repo forgeplus --sha <commit-sha>
+gitlink-cli code +commit-diff --owner Gitlink --repo forgeplus --sha <commit-sha>
+gitlink-cli code +blame --owner Gitlink --repo forgeplus --sha master --path README.md
+
+# Work with tags
+gitlink-cli code +tags --owner Gitlink --repo forgeplus
+gitlink-cli code +tag --owner Gitlink --repo forgeplus --name v1.0.0
+gitlink-cli code +delete-tag --owner Gitlink --repo forgeplus --name v1.0.0 --dry-run
 ```
 
 ### Webhook Management
@@ -619,6 +646,7 @@ See [skills/README.md](skills/README.md) for details.
 |-------|-------------|
 | `gitlink-shared` | Authentication, global parameters, safety rules, API notes |
 | `gitlink-repo` | Repository operations (create, view, delete, fork, insights, etc.) |
+| `gitlink-code` | Repository code browsing (files, trees, blobs, commits, blame, tags) |
 | `gitlink-issue` | Issue operations (create, update, close, comment, etc.) |
 | `gitlink-pr` | Pull request operations (create, merge, review, etc.) |
 | `gitlink-member` | Repository member and invite link management |

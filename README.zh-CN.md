@@ -88,6 +88,7 @@
 | 分类 | 能力 |
 |------|------|
 | 📦 仓库 | 列出、创建、Fork、删除仓库，查看仓库信息、洞察数据和互动状态 |
+| 代码 | 浏览仓库文件、目录树、Blob、提交、Blame 和标签 |
 | 🐛 Issue | 创建、更新、关闭、批量关闭、评论 Issue |
 | 🔖 标签 | 创建、列出、更新、删除 Issue 标签 |
 | 🔀 PR | 创建、合并、Review Pull Request，查看变更文件 |
@@ -243,6 +244,32 @@ gitlink-cli repo +create -n my-project -d "项目描述"
 
 # Fork 仓库
 gitlink-cli repo +fork --owner Gitlink --repo forgeplus
+```
+
+### 代码浏览
+
+```bash
+# 搜索仓库文件
+gitlink-cli code +files --owner Gitlink --repo forgeplus --search README --ref master
+
+# 列出根目录或查看指定路径
+gitlink-cli code +entries --owner Gitlink --repo forgeplus --ref master
+gitlink-cli code +sub-entries --owner Gitlink --repo forgeplus --path docs --ref master
+
+# 读取 Git 对象数据
+gitlink-cli code +tree --owner Gitlink --repo forgeplus --sha master --recursive
+gitlink-cli code +blob --owner Gitlink --repo forgeplus --sha <blob-sha>
+
+# 查看提交信息
+gitlink-cli code +commits --owner Gitlink --repo forgeplus --sha master
+gitlink-cli code +commit-files --owner Gitlink --repo forgeplus --sha <commit-sha>
+gitlink-cli code +commit-diff --owner Gitlink --repo forgeplus --sha <commit-sha>
+gitlink-cli code +blame --owner Gitlink --repo forgeplus --sha master --path README.md
+
+# 查看标签
+gitlink-cli code +tags --owner Gitlink --repo forgeplus
+gitlink-cli code +tag --owner Gitlink --repo forgeplus --name v1.0.0
+gitlink-cli code +delete-tag --owner Gitlink --repo forgeplus --name v1.0.0 --dry-run
 ```
 
 ### Webhook 管理
@@ -498,6 +525,7 @@ git push gitlink
 |-------|------|
 | `gitlink-shared` | 认证、全局参数、安全规则、API 注意事项 |
 | `gitlink-repo` | 仓库操作（创建、查看、删除、Fork、洞察数据等） |
+| `gitlink-code` | 代码浏览（文件、目录树、Blob、提交、Blame、标签） |
 | `gitlink-issue` | Issue 操作（创建、更新、关闭、评论等） |
 | `gitlink-pr` | Pull Request 操作（创建、合并、Review 等） |
 | `gitlink-member` | 仓库成员与邀请链接管理 |

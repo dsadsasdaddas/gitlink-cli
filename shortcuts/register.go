@@ -6,6 +6,7 @@ import (
 	"github.com/gitlink-org/gitlink-cli/internal/i18n"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/branch"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/ci"
+	"github.com/gitlink-org/gitlink-cli/shortcuts/code"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/common"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/compare"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/health"
@@ -46,6 +47,7 @@ func RegisterAll(root *cobra.Command, translators ...*i18n.Translator) {
 		"user":      user.Shortcuts(tr),
 		"search":    search.Shortcuts(tr),
 		"ci":        ci.Shortcuts(tr),
+		"code":      code.Shortcuts(),
 		"compare":   compare.Shortcuts(),
 		"webhook":   webhook.Shortcuts(tr),
 		"health":    health.Shortcuts(tr),
@@ -67,6 +69,7 @@ func RegisterAll(root *cobra.Command, translators ...*i18n.Translator) {
 		"user":      tr.T("cmd.user.short"),
 		"search":    tr.T("cmd.search.short"),
 		"ci":        tr.T("cmd.ci.short"),
+		"code":      "Repository code browsing",
 		"compare":   "Compare branches, tags, or commits",
 		"webhook":   tr.T("cmd.webhook.short"),
 		"health":    "Project health data collection",
