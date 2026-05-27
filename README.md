@@ -28,7 +28,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 ## Why gitlink-cli?
 
 - **Agent-Native Design** — Structured [Skills](./skills/) out of the box, compatible with Claude Code, OpenClaw, and other AI platforms — Agents can operate GitLink with zero extra setup
-- **Wide Coverage** — Repository, Issue, PR, Webhook, Member, Branch, Release, CI, Org, Search, and User workflows are covered by high-level commands
+- **Wide Coverage** — Repository, Issue, PR, Webhook, Member, Branch, Release, CI, Pipeline, Org, Search, and User workflows are covered by high-level commands
 - **AI-Friendly & Optimized** — Every command is tested with real Agents, featuring concise parameters, smart defaults, and structured output
 - **Cross-Platform** — Runs on macOS, Linux, and Windows (x64/arm64), install via `npm install -g @gitlink-ai/cli` in one command, binary auto-downloaded
 - **Open Source, Zero Barriers** — MulanPSL-2.0 license, ready to use, just `npm install`
@@ -48,6 +48,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 | 🏷️ Release | Create, view, delete releases |
 | 🏢 Org | Manage organizations, members, teams |
 | 🔧 CI | View builds, logs, CI/CD operations |
+| ⚙️ Pipeline | Run, inspect, enable, disable, delete pipeline workflows and logs |
 | 🔔 Webhook | Manage repo webhooks and test deliveries |
 | 🔍 Search | Search repositories, users |
 | 👤 User | View user profiles and info |
@@ -315,6 +316,28 @@ gitlink-cli ci +log --owner Gitlink --repo forgeplus -i <build_id>
 gitlink-cli ci +restart --owner Gitlink --repo forgeplus -i <build_id>
 ```
 
+### Pipeline Operations
+
+```bash
+# List platform pipelines
+gitlink-cli pipeline +list --owner-id 123 --page 1 --limit 20
+
+# List repository pipeline runs
+gitlink-cli pipeline +runs --owner Gitlink --repo forgeplus --ref master --workflow build.yml
+
+# Start a pipeline workflow, previewing the request first
+gitlink-cli pipeline +run --owner Gitlink --repo forgeplus --ref master --workflow build.yml --dry-run
+
+# Inspect pipeline details and logs
+gitlink-cli pipeline +view --owner Gitlink --repo forgeplus --id 7
+gitlink-cli pipeline +logs --owner Gitlink --repo forgeplus --run-id 99 --id 7 --index 43
+gitlink-cli pipeline +results --owner Gitlink --repo forgeplus --run-id 99
+
+# Toggle or delete pipeline workflows, previewing destructive writes first
+gitlink-cli pipeline +disable --owner Gitlink --repo forgeplus --id 7 --workflow build.yml --dry-run
+gitlink-cli pipeline +delete --owner Gitlink --repo forgeplus --id 7 --dry-run
+```
+
 ### Search
 
 ```bash
@@ -492,6 +515,7 @@ See [skills/README.md](skills/README.md) for details.
 | `gitlink-branch` | Branch management (create, delete, list, protect, unprotect) |
 | `gitlink-release` | Release management (create, view, delete, etc.) |
 | `gitlink-ci` | CI/CD operations (builds, logs, etc.) |
+| `gitlink-pipeline` | Pipeline workflow operations (runs, logs, enable, disable, delete, etc.) |
 | `gitlink-search` | Search (repositories, users, etc.) |
 | `gitlink-org` | Organization management (members, teams, etc.) |
 | `gitlink-user` | User management (profile info, etc.) |
@@ -524,6 +548,7 @@ gitlink-cli/
 │   ├── release/              # Release shortcuts
 │   ├── org/                  # Organization shortcuts
 │   ├── ci/                   # CI shortcuts
+│   ├── pipeline/             # Pipeline shortcuts
 │   ├── search/               # Search shortcuts
 │   ├── user/                 # User shortcuts
 │   └── register.go           # Registration entry point
