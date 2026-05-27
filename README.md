@@ -88,6 +88,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 | Category | Capabilities |
 |----------|-------------|
 | 📦 Repo | List, create, fork, delete repositories, view repo info, insights, and interactions |
+| Dataset | Create, update, view, list datasets, delete dataset attachments |
 | 🐛 Issue | Create, update, close, batch close, comment on issues |
 | 🔖 Label | Create, list, update, delete issue labels |
 | 🔀 PR | Create, merge, review pull requests, view changed files |
@@ -232,6 +233,25 @@ gitlink-cli repo +create -n my-project -d "Project description"
 
 # Fork a repository
 gitlink-cli repo +fork --owner Gitlink --repo forgeplus
+```
+
+### Dataset Management
+
+```bash
+# View a repository dataset and its attachments
+gitlink-cli dataset +view --owner Gitlink --repo forgeplus
+
+# List project datasets
+gitlink-cli dataset +list --ids 1,2
+
+# Create or update a repository dataset
+gitlink-cli dataset +create --owner Gitlink --repo forgeplus \
+  --title "Research dataset" --description "Dataset description" --license-id 3
+gitlink-cli dataset +update --owner Gitlink --repo forgeplus \
+  --title "Research dataset" --description "Updated description"
+
+# Preview attachment deletion
+gitlink-cli dataset +delete-attachment --uuid <attachment-uuid> --dry-run
 ```
 
 ### Webhook Management
@@ -619,6 +639,7 @@ See [skills/README.md](skills/README.md) for details.
 |-------|-------------|
 | `gitlink-shared` | Authentication, global parameters, safety rules, API notes |
 | `gitlink-repo` | Repository operations (create, view, delete, fork, insights, etc.) |
+| `gitlink-dataset` | Dataset operations (create, update, view, list, delete attachments) |
 | `gitlink-issue` | Issue operations (create, update, close, comment, etc.) |
 | `gitlink-pr` | Pull request operations (create, merge, review, etc.) |
 | `gitlink-member` | Repository member and invite link management |

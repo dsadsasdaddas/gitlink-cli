@@ -88,6 +88,7 @@
 | 分类 | 能力 |
 |------|------|
 | 📦 仓库 | 列出、创建、Fork、删除仓库，查看仓库信息、洞察数据和互动状态 |
+| 数据集 | 创建、更新、查看、查询数据集，删除数据集附件 |
 | 🐛 Issue | 创建、更新、关闭、批量关闭、评论 Issue |
 | 🔖 标签 | 创建、列出、更新、删除 Issue 标签 |
 | 🔀 PR | 创建、合并、Review Pull Request，查看变更文件 |
@@ -243,6 +244,25 @@ gitlink-cli repo +create -n my-project -d "项目描述"
 
 # Fork 仓库
 gitlink-cli repo +fork --owner Gitlink --repo forgeplus
+```
+
+### 数据集管理
+
+```bash
+# 查看仓库数据集和附件
+gitlink-cli dataset +view --owner Gitlink --repo forgeplus
+
+# 查询项目数据集
+gitlink-cli dataset +list --ids 1,2
+
+# 创建或更新仓库数据集
+gitlink-cli dataset +create --owner Gitlink --repo forgeplus \
+  --title "Research dataset" --description "Dataset description" --license-id 3
+gitlink-cli dataset +update --owner Gitlink --repo forgeplus \
+  --title "Research dataset" --description "Updated description"
+
+# 预览删除数据集附件
+gitlink-cli dataset +delete-attachment --uuid <attachment-uuid> --dry-run
 ```
 
 ### Webhook 管理
@@ -498,6 +518,7 @@ git push gitlink
 |-------|------|
 | `gitlink-shared` | 认证、全局参数、安全规则、API 注意事项 |
 | `gitlink-repo` | 仓库操作（创建、查看、删除、Fork、洞察数据等） |
+| `gitlink-dataset` | 数据集操作（创建、更新、查看、查询、删除附件） |
 | `gitlink-issue` | Issue 操作（创建、更新、关闭、评论等） |
 | `gitlink-pr` | Pull Request 操作（创建、合并、Review 等） |
 | `gitlink-member` | 仓库成员与邀请链接管理 |
