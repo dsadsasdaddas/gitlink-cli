@@ -99,6 +99,7 @@
 | ⚙️ Pipeline | 运行、查看、启停、删除流水线工作流并查询日志 |
 | 🔍 搜索 | 搜索仓库、用户 |
 | 👤 用户 | 查看用户资料和信息 |
+| Template | 管理仓库 Issue / 项目模板 |
 | 📋 项目管理 | Sprint 管理、看板、周报 |
 | 🤖 工作流 | AI 驱动的 Issue 分类、PR Review、Release Notes |
 
@@ -436,6 +437,23 @@ gitlink-cli search +repos -k "machine learning"
 gitlink-cli search +users -k "zhangsan"
 ```
 
+### 模板管理
+
+```bash
+# 列出和查看仓库项目模板
+gitlink-cli template +list --owner Gitlink --repo forgeplus
+gitlink-cli template +view --owner Gitlink --repo forgeplus --id 7
+
+# 创建或更新模板，写入前先 dry-run
+gitlink-cli template +create --owner Gitlink --repo forgeplus \
+  --name "Bug report" --content-file .gitlink/ISSUE_TEMPLATE.md --dry-run
+gitlink-cli template +update --owner Gitlink --repo forgeplus \
+  --id 7 --content "Updated template content" --dry-run
+
+# 删除模板，删除前先预览请求
+gitlink-cli template +delete --owner Gitlink --repo forgeplus --id 7 --dry-run
+```
+
 ### Raw API
 
 Shortcuts 未覆盖的接口可通过 Raw API 直接调用：
@@ -507,6 +525,7 @@ git push gitlink
 | `gitlink-pipeline` | 流水线工作流操作（运行、日志、启停、删除等） |
 | `gitlink-search` | 搜索功能（仓库、用户等） |
 | `gitlink-user` | 用户管理（个人信息等） |
+| `gitlink-template` | 仓库项目模板（列表、创建、更新、删除） |
 | `gitlink-pm` | 项目管理（Sprint、看板、周报等） |
 | `gitlink-workflow` | AI 自动化工作流（Issue 分类、PR Review、Release Notes 等） |
 
@@ -539,6 +558,7 @@ gitlink-cli/
 │   ├── pipeline/             # Pipeline shortcuts
 │   ├── search/               # 搜索 shortcuts
 │   ├── user/                 # 用户 shortcuts
+│   ├── template/             # 模板 shortcuts
 │   └── register.go           # 注册入口
 ├── skills/                   # AI Agent Skills
 │   ├── README.md             # Skills 使用指南

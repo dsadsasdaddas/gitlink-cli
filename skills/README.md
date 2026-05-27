@@ -100,6 +100,8 @@ skills/
 │       └── search-workflow.md         # 搜索工作流
 ├── gitlink-user/                      # 用户管理
 │   └── SKILL.md                       # 用户操作指南
+├── gitlink-template/                  # 仓库项目模板
+│   └── SKILL.md                       # 模板操作指南
 ├── gitlink-org/                       # 组织管理
 │   ├── SKILL.md                       # 组织操作指南
 │   └── examples/
@@ -147,6 +149,7 @@ skills/
 |-------|------|----------|
 | **gitlink-search** | 搜索功能 | `search +repos`, `search +users` |
 | **gitlink-user** | 用户管理 | `user +me`, `user +info` |
+| **gitlink-template** | 仓库项目模板 | `template +list`, `template +create`, `template +update` |
 | **gitlink-org** | 组织管理 | `org +list`, `org +info`, `org +members` |
 | **gitlink-ci** | CI/CD | `ci +builds`, `ci +logs` |
 | **gitlink-pipeline** | 流水线工作流 | `pipeline +runs`, `pipeline +run`, `pipeline +logs` |

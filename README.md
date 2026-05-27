@@ -100,6 +100,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 | 🔔 Webhook | Manage repo webhooks and test deliveries |
 | 🔍 Search | Search repositories, users |
 | 👤 User | View user profiles and info |
+| Template | Manage repository issue/project templates |
 | 📋 PM | Sprint management, kanban boards, weekly reports |
 | 🤖 Workflow | AI-powered issue triage, PR review, release notes |
 
@@ -458,6 +459,23 @@ gitlink-cli search +repos -k "machine learning"
 gitlink-cli search +users -k "zhangsan"
 ```
 
+### Template Operations
+
+```bash
+# List and view repository project templates
+gitlink-cli template +list --owner Gitlink --repo forgeplus
+gitlink-cli template +view --owner Gitlink --repo forgeplus --id 7
+
+# Create or update templates, previewing writes first
+gitlink-cli template +create --owner Gitlink --repo forgeplus \
+  --name "Bug report" --content-file .gitlink/ISSUE_TEMPLATE.md --dry-run
+gitlink-cli template +update --owner Gitlink --repo forgeplus \
+  --id 7 --content "Updated template content" --dry-run
+
+# Delete a template, previewing the request first
+gitlink-cli template +delete --owner Gitlink --repo forgeplus --id 7 --dry-run
+```
+
 ### Workflow Agent Commands
 
 `workflow` provides rule-based repository analysis for maintainers and AI Agents. It currently supports:
@@ -629,6 +647,7 @@ See [skills/README.md](skills/README.md) for details.
 | `gitlink-search` | Search (repositories, users, etc.) |
 | `gitlink-org` | Organization management (members, teams, etc.) |
 | `gitlink-user` | User management (profile info, etc.) |
+| `gitlink-template` | Repository project templates (list, create, update, delete) |
 | `gitlink-pm` | Project management (sprints, kanban, weekly reports, etc.) |
 | `gitlink-workflow` | AI-powered workflows (issue triage, PR review, release notes, etc.) |
 | `gitlink-health` | Project health analysis (PR/Issue metrics aggregation, health reports) |
@@ -662,6 +681,7 @@ gitlink-cli/
 │   ├── pipeline/             # Pipeline shortcuts
 │   ├── search/               # Search shortcuts
 │   ├── user/                 # User shortcuts
+│   ├── template/             # Project template shortcuts
 │   └── register.go           # Registration entry point
 ├── skills/                   # AI Agent Skills
 │   ├── README.md             # Skills guide
