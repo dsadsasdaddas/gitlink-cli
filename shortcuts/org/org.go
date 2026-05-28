@@ -3,6 +3,7 @@ package org
 import (
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/gitlink-org/gitlink-cli/internal/i18n"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/common"
@@ -86,6 +87,30 @@ func Shortcuts(translators ...*i18n.Translator) []*common.Shortcut {
 				return ctx.Output(env)
 			},
 		},
+		{
+			Name:        "team-projects-add-all",
+			Description: "Add all organization projects to a team",
+			Flags: []common.Flag{
+				{Name: "organization", Short: "o", Usage: "Organization identifier", Required: true},
+				{Name: "team-id", Short: "t", Usage: "Team ID", Required: true},
+				{Name: "dry-run", Usage: "Preview the request without changing team projects", Bool: true, Default: "false"},
+			},
+			Run: func(ctx *common.RuntimeContext) error {
+				return runTeamProjectsAll(ctx, "POST", "add_all_team_projects")
+			},
+		},
+		{
+			Name:        "team-projects-remove-all",
+			Description: "Remove all projects from an organization team",
+			Flags: []common.Flag{
+				{Name: "organization", Short: "o", Usage: "Organization identifier", Required: true},
+				{Name: "team-id", Short: "t", Usage: "Team ID", Required: true},
+				{Name: "dry-run", Usage: "Preview the request without changing team projects", Bool: true, Default: "false"},
+			},
+			Run: func(ctx *common.RuntimeContext) error {
+				return runTeamProjectsAll(ctx, "DELETE", "remove_all_team_projects")
+			},
+		},
 	}
 }
 
@@ -94,4 +119,40 @@ func shortcutTranslator(translators ...*i18n.Translator) *i18n.Translator {
 		return translators[0]
 	}
 	return i18n.Default()
+}
+
+func runTeamProjectsAll(ctx *common.RuntimeContext, method, action string) error {
+	organization, err := ctx.RequireArg("organization")
+	if err != nil {
+		return err
+	}
+	teamID, err := ctx.RequireArg("team-id")
+	if err != nil {
+		return err
+	}
+
+	operation := "create_all"
+	if method == "DELETE" {
+		operation = "destroy_all"
+	}
+	path := fmt.Sprintf("/organizations/%s/teams/%s/team_projects/%s", organization, teamID, operation)
+	if parseBool(ctx.Arg("dry-run")) {
+		return ctx.OutputData(map[string]interface{}{
+			"dry_run":      true,
+			"action":       action,
+			"method":       method,
+			"path":         path,
+			"organization": organization,
+			"team_id":      teamID,
+		})
+	}
+	env, err := ctx.CallAPI(method, path, nil)
+	if err != nil {
+		return err
+	}
+	return ctx.Output(env)
+}
+
+func parseBool(value string) bool {
+	return strings.EqualFold(strings.TrimSpace(value), "true")
 }

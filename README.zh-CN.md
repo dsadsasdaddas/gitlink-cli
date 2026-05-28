@@ -94,7 +94,7 @@
 | 👥 成员 | 列出、添加、移除仓库成员，调整角色，生成和接受邀请链接 |
 | 🌿 分支 | 创建、删除、保护分支 |
 | 🏷️ 发布 | 创建、查看、删除 Release |
-| 🏢 组织 | 管理组织、成员、团队 |
+| 🏢 组织 | 管理组织、成员、团队和团队项目绑定 |
 | 🔧 CI | 查看构建、日志、CI/CD 操作 |
 | ⚙️ Pipeline | 运行、查看、启停、删除流水线工作流并查询日志 |
 | 🔍 搜索 | 搜索仓库、用户 |
@@ -282,6 +282,22 @@ gitlink-cli member +role --owner Gitlink --repo forgeplus --user-id 101 --role D
 
 # 生成邀请链接
 gitlink-cli member +invite-link --owner Gitlink --repo forgeplus --role developer --apply true
+```
+
+### 组织操作
+
+```bash
+# 列出组织
+gitlink-cli org +list
+
+# 查看组织成员
+gitlink-cli org +members --id Gitlink
+
+# 预览将组织全部项目加入团队
+gitlink-cli org +team-projects-add-all --organization Gitlink --team-id 7 --dry-run
+
+# 预览从团队移除全部项目
+gitlink-cli org +team-projects-remove-all --organization Gitlink --team-id 7 --dry-run
 ```
 
 ### Issue 管理

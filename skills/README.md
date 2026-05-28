@@ -147,7 +147,7 @@ skills/
 |-------|------|----------|
 | **gitlink-search** | 搜索功能 | `search +repos`, `search +users` |
 | **gitlink-user** | 用户管理 | `user +me`, `user +info` |
-| **gitlink-org** | 组织管理 | `org +list`, `org +info`, `org +members` |
+| **gitlink-org** | 组织管理 | `org +list`, `org +info`, `org +members`, `org +team-projects-add-all`, `org +team-projects-remove-all` |
 | **gitlink-ci** | CI/CD | `ci +builds`, `ci +logs` |
 | **gitlink-pipeline** | 流水线工作流 | `pipeline +runs`, `pipeline +run`, `pipeline +logs` |
 | **gitlink-pm** | 项目管理 | 通过 Raw API 访问 |
@@ -222,6 +222,9 @@ gitlink-cli search +users -k "zhangsan"
 # 查看组织
 gitlink-cli org +list
 gitlink-cli org +info -i Gitlink
+
+# 组织团队项目绑定 dry-run
+gitlink-cli org +team-projects-add-all --organization Gitlink --team-id 7 --dry-run
 ```
 
 详见: [gitlink-search/examples/search-workflow.md](gitlink-search/examples/search-workflow.md)
