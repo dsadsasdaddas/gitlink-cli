@@ -42,6 +42,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 |----------|-------------|
 | 📦 Repo | List, create, fork, delete repositories, view repo info |
 | 🐛 Issue | Create, update, close, batch close, comment on issues |
+| 🔖 Label | Create, list, update, delete issue labels |
 | 🔀 PR | Create, merge, review pull requests, view changed files |
 | 👥 Member | List, add, remove repository members, change roles, create and accept invite links |
 | 🌿 Branch | Create, delete, list, protect, unprotect branches |
@@ -230,6 +231,25 @@ gitlink-cli issue +assigners --owner Gitlink --repo forgeplus
 
 # List issue authors
 gitlink-cli issue +authors --owner Gitlink --repo forgeplus
+```
+
+### Label Management
+
+```bash
+# List issue labels
+gitlink-cli label +list --owner Gitlink --repo forgeplus
+
+# Filter labels by keyword
+gitlink-cli label +list --owner Gitlink --repo forgeplus -k bug
+
+# Create a label (color defaults to #1E90FF)
+gitlink-cli label +create --owner Gitlink --repo forgeplus -n bug -d "Something is broken" -c "#FF0000"
+
+# Update a label (unspecified fields are preserved)
+gitlink-cli label +update --owner Gitlink --repo forgeplus -i 42 -c "#00FF00"
+
+# Delete a label
+gitlink-cli label +delete --owner Gitlink --repo forgeplus -i 42
 ```
 
 ### Pull Requests

@@ -42,6 +42,7 @@
 |------|------|
 | 📦 仓库 | 列出、创建、Fork、删除仓库，查看仓库信息 |
 | 🐛 Issue | 创建、更新、关闭、批量关闭、评论 Issue |
+| 🔖 标签 | 创建、列出、更新、删除 Issue 标签 |
 | 🔀 PR | 创建、合并、Review Pull Request，查看变更文件 |
 | 👥 成员 | 列出、添加、移除仓库成员，调整角色，生成和接受邀请链接 |
 | 🌿 分支 | 创建、删除、保护分支 |
@@ -241,6 +242,25 @@ gitlink-cli issue +assigners --owner Gitlink --repo forgeplus
 
 # 列出 Issue 发布人
 gitlink-cli issue +authors --owner Gitlink --repo forgeplus
+```
+
+### 标签管理
+
+```bash
+# 列出 Issue 标签
+gitlink-cli label +list --owner Gitlink --repo forgeplus
+
+# 按关键词筛选标签
+gitlink-cli label +list --owner Gitlink --repo forgeplus -k bug
+
+# 创建标签（颜色默认 #1E90FF）
+gitlink-cli label +create --owner Gitlink --repo forgeplus -n bug -d "功能缺陷" -c "#FF0000"
+
+# 更新标签（未指定的字段会被保留）
+gitlink-cli label +update --owner Gitlink --repo forgeplus -i 42 -c "#00FF00"
+
+# 删除标签
+gitlink-cli label +delete --owner Gitlink --repo forgeplus -i 42
 ```
 
 ### Pull Request
