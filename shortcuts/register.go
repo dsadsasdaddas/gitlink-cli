@@ -8,6 +8,7 @@ import (
 	"github.com/gitlink-org/gitlink-cli/shortcuts/common"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/compare"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/issue"
+	"github.com/gitlink-org/gitlink-cli/shortcuts/label"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/member"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/milestone"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/org"
@@ -25,6 +26,7 @@ func RegisterAll(root *cobra.Command) {
 	groups := map[string][]*common.Shortcut{
 		"repo":      repo.Shortcuts(),
 		"issue":     issue.Shortcuts(),
+		"label":     label.Shortcuts(),
 		"member":    member.Shortcuts(),
 		"milestone": milestone.Shortcuts(),
 		"pr":        pr.Shortcuts(),
@@ -42,6 +44,7 @@ func RegisterAll(root *cobra.Command) {
 	descriptions := map[string]string{
 		"repo":      "Repository operations",
 		"issue":     "Issue operations",
+		"label":     "Issue label operations",
 		"member":    "Repository member operations",
 		"milestone": "Milestone operations",
 		"pr":        "Pull request operations",
