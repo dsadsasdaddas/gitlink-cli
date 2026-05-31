@@ -28,7 +28,7 @@
 ## 为什么选择 gitlink-cli？
 
 - **Agent-Native 设计** — 开箱即用结构化 [Skills](./skills/)，兼容 Claude Code — Agent 零配置即可操作 GitLink
-- **广泛覆盖** — 仓库、Issue、PR、Webhook、成员、分支、Release、CI、组织、搜索、用户等常用工作流均提供高层命令
+- **广泛覆盖** — 仓库、Issue、PR、Webhook、成员、分支、Release、CI、Pipeline、组织、搜索、用户等常用工作流均提供高层命令
 - **AI 友好 & 优化** — 每条命令都经过真实 Agent 测试，简洁参数、智能默认值、结构化输出
 - **跨平台** — macOS、Linux、Windows (x64/arm64) 全支持，`npm` 一条命令安装
 - **开源零门槛** — 木兰宽松许可证第2版（MulanPSL-2.0），`npm install` 即用
@@ -49,6 +49,7 @@
 | 🏷️ 发布 | 创建、查看、删除 Release |
 | 🏢 组织 | 管理组织、成员、团队 |
 | 🔧 CI | 查看构建、日志、CI/CD 操作 |
+| ⚙️ Pipeline | 运行、查看、启停、删除流水线工作流并查询日志 |
 | 🔍 搜索 | 搜索仓库、用户 |
 | 👤 用户 | 查看用户资料和信息 |
 | 📋 项目管理 | Sprint 管理、看板、周报 |
@@ -314,6 +315,28 @@ gitlink-cli release +create --owner Gitlink --repo forgeplus -t v1.0.0 -n "v1.0.
 gitlink-cli release +view --owner Gitlink --repo forgeplus -i <version_id>
 ```
 
+### 流水线管理
+
+```bash
+# 列出平台流水线
+gitlink-cli pipeline +list --owner-id 123 --page 1 --limit 20
+
+# 列出仓库流水线运行记录
+gitlink-cli pipeline +runs --owner Gitlink --repo forgeplus --ref master --workflow build.yml
+
+# 运行流水线工作流，先用 dry-run 预览请求
+gitlink-cli pipeline +run --owner Gitlink --repo forgeplus --ref master --workflow build.yml --dry-run
+
+# 查看流水线详情、日志和运行结果
+gitlink-cli pipeline +view --owner Gitlink --repo forgeplus --id 7
+gitlink-cli pipeline +logs --owner Gitlink --repo forgeplus --run-id 99 --id 7 --index 43
+gitlink-cli pipeline +results --owner Gitlink --repo forgeplus --run-id 99
+
+# 启停或删除流水线工作流，写入/删除前先预览
+gitlink-cli pipeline +disable --owner Gitlink --repo forgeplus --id 7 --workflow build.yml --dry-run
+gitlink-cli pipeline +delete --owner Gitlink --repo forgeplus --id 7 --dry-run
+```
+
 ### 搜索
 
 ```bash
@@ -392,6 +415,7 @@ git push gitlink
 | `gitlink-release` | 发布管理（创建、查看、删除等） |
 | `gitlink-org` | 组织管理（成员、团队等） |
 | `gitlink-ci` | CI/CD 操作（构建、日志等） |
+| `gitlink-pipeline` | 流水线工作流操作（运行、日志、启停、删除等） |
 | `gitlink-search` | 搜索功能（仓库、用户等） |
 | `gitlink-user` | 用户管理（个人信息等） |
 | `gitlink-pm` | 项目管理（Sprint、看板、周报等） |
@@ -423,6 +447,7 @@ gitlink-cli/
 │   ├── release/              # Release shortcuts
 │   ├── org/                  # 组织 shortcuts
 │   ├── ci/                   # CI shortcuts
+│   ├── pipeline/             # Pipeline shortcuts
 │   ├── search/               # 搜索 shortcuts
 │   ├── user/                 # 用户 shortcuts
 │   └── register.go           # 注册入口

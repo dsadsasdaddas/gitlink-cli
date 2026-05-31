@@ -108,6 +108,8 @@ skills/
 │   ├── SKILL.md                       # CI 操作指南
 │   └── examples/
 │       └── ci-workflow.md             # CI 工作流
+├── gitlink-pipeline/                  # 流水线工作流
+│   └── SKILL.md                       # Pipeline 操作指南
 ├── gitlink-pm/                        # 项目管理
 │   └── SKILL.md                       # PM 操作指南
 └── gitlink-workflow/                  # AI 自动化工作流
@@ -138,6 +140,7 @@ skills/
 | **gitlink-user** | 用户管理 | `user +me`, `user +info` |
 | **gitlink-org** | 组织管理 | `org +list`, `org +info`, `org +members` |
 | **gitlink-ci** | CI/CD | `ci +builds`, `ci +logs` |
+| **gitlink-pipeline** | 流水线工作流 | `pipeline +runs`, `pipeline +run`, `pipeline +logs` |
 | **gitlink-pm** | 项目管理 | 通过 Raw API 访问 |
 | **gitlink-workflow** | AI 工作流 | Issue 分类、PR Review、Release Notes |
 
@@ -238,6 +241,7 @@ gitlink-cli org +info -i Gitlink
 
 **发布和搜索**:
 - [gitlink-release/SKILL.md](gitlink-release/SKILL.md) - Release 命令
+- [gitlink-pipeline/SKILL.md](gitlink-pipeline/SKILL.md) - Pipeline 命令
 - [gitlink-search/SKILL.md](gitlink-search/SKILL.md) - 搜索命令
 
 **组织和用户**:
