@@ -7,6 +7,6 @@
     "minLength": 1
   },
   "propertyNames": {
-    "pattern": "^(cmd|flag|error|output|prompt|table)\\.[a-z0-9_.-]+$"
+    "pattern": "^(cmd|flag|error|output|prompt|success|warning|table)\\.[a-z0-9_.-]+$"
   }
 }

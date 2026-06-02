@@ -61,7 +61,7 @@ func checkLocaleFormat(fix bool) error {
 			continue
 		}
 		if fix {
-			if err := os.WriteFile(path, formatted, 0644); err != nil {
+			if err := os.WriteFile(path, formatted, 0600); err != nil {
 				return err
 			}
 			continue
@@ -128,13 +128,19 @@ func scanCodeKeys(roots []string) (map[string]struct{}, []string, error) {
 				}
 				return nil
 			}
+			if entry.Type()&os.ModeSymlink != 0 {
+				return nil
+			}
 			if filepath.Ext(path) != ".go" {
 				return nil
 			}
 			if strings.HasSuffix(path, "_test.go") {
 				return nil
 			}
-			data, err := os.ReadFile(path)
+			if !entry.Type().IsRegular() {
+				return nil
+			}
+			data, err := os.ReadFile(path) // #nosec G122 -- dev-only scan over repo roots; symlinks are skipped above.
 			if err != nil {
 				return err
 			}
