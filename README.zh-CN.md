@@ -278,6 +278,15 @@ gitlink-cli issue +assigners --owner Gitlink --repo forgeplus
 
 # 列出 Issue 发布人
 gitlink-cli issue +authors --owner Gitlink --repo forgeplus
+
+# 列出 Issue 优先级
+gitlink-cli issue +priorities --owner Gitlink --repo forgeplus
+
+# 列出 Issue 标签
+gitlink-cli issue +tags --owner Gitlink --repo forgeplus --only-name
+
+# 列出 Issue 状态
+gitlink-cli issue +statuses --owner Gitlink --repo forgeplus
 ```
 
 ### 标签管理

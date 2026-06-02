@@ -267,6 +267,15 @@ gitlink-cli issue +assigners --owner Gitlink --repo forgeplus
 
 # List issue authors
 gitlink-cli issue +authors --owner Gitlink --repo forgeplus
+
+# List issue priorities
+gitlink-cli issue +priorities --owner Gitlink --repo forgeplus
+
+# List issue tags
+gitlink-cli issue +tags --owner Gitlink --repo forgeplus --only-name
+
+# List issue statuses
+gitlink-cli issue +statuses --owner Gitlink --repo forgeplus
 ```
 
 ### Label Management

@@ -470,6 +470,78 @@ func TestBatchCloseWithFailedClose(t *testing.T) {
 	}
 }
 
+// --- metadata lookup shortcuts ---
+
+func TestIssuePrioritiesShortcut(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" || r.URL.Path != "/v1/owner/repo/issue_priorities.json" {
+			t.Fatalf("unexpected request: %s %s", r.Method, r.URL.Path)
+		}
+		assertEqual(t, r.URL.Query().Get("keyword"), "normal")
+		writeJSON(w, []map[string]interface{}{
+			{"id": 2, "name": "Normal"},
+		})
+	}))
+	defer server.Close()
+
+	err := runShortcut(t, server, "priorities", map[string]string{"keyword": "normal"})
+	if err != nil {
+		t.Fatalf("priorities shortcut failed: %v", err)
+	}
+}
+
+func TestIssueTagsShortcutWithFilters(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" || r.URL.Path != "/v1/owner/repo/issue_tags.json" {
+			t.Fatalf("unexpected request: %s %s", r.Method, r.URL.Path)
+		}
+		query := r.URL.Query()
+		assertEqual(t, query.Get("keyword"), "bug")
+		assertEqual(t, query.Get("only_name"), "true")
+		assertEqual(t, query.Get("order_by"), "issues_count")
+		assertEqual(t, query.Get("order_direction"), "desc")
+		writeJSON(w, map[string]interface{}{
+			"total_count": 1,
+			"issue_tags": []map[string]interface{}{
+				{"id": 3, "name": "bug"},
+			},
+		})
+	}))
+	defer server.Close()
+
+	err := runShortcut(t, server, "tags", map[string]string{
+		"keyword":         "bug",
+		"only-name":       "true",
+		"order-by":        "issues_count",
+		"order-direction": "desc",
+	})
+	if err != nil {
+		t.Fatalf("tags shortcut failed: %v", err)
+	}
+}
+
+func TestIssueStatusesShortcut(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" || r.URL.Path != "/v1/owner/repo/issue_statues.json" {
+			t.Fatalf("unexpected request: %s %s", r.Method, r.URL.Path)
+		}
+		assertEqual(t, r.URL.Query().Get("page"), "2")
+		assertEqual(t, r.URL.Query().Get("limit"), "10")
+		writeJSON(w, map[string]interface{}{
+			"total_count": 1,
+			"statues": []map[string]interface{}{
+				{"id": 1, "name": "Open"},
+			},
+		})
+	}))
+	defer server.Close()
+
+	err := runShortcut(t, server, "statuses", map[string]string{"page": "2", "limit": "10"})
+	if err != nil {
+		t.Fatalf("statuses shortcut failed: %v", err)
+	}
+}
+
 // --- HTTP error paths ---
 
 func TestIssueListHTTPError(t *testing.T) {
