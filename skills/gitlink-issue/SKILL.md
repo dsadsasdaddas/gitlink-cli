@@ -29,6 +29,9 @@ metadata:
 | `issue +comment` | 添加评论 | 是 |
 | `issue +assigners` | 查询 Issue 负责人列表 | 否（公开项目） |
 | `issue +authors` | 查询 Issue 发布人列表 | 否（公开项目） |
+| `issue +statuses` | 查询 Issue 状态列表 | 否（公开项目） |
+| `issue +tags` | 查询 Issue 标签列表 | 否（公开项目） |
+| `issue +priorities` | 查询 Issue 优先级列表 | 否（公开项目） |
 
 ## 使用示例
 

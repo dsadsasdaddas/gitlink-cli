@@ -268,6 +268,81 @@ func Shortcuts(translators ...*i18n.Translator) []*common.Shortcut {
 				return ctx.Output(env)
 			},
 		},
+		{
+			Name:        "priorities",
+			Description: "List issue priorities",
+			Flags: []common.Flag{
+				{Name: "keyword", Short: "k", Usage: "Search keyword"},
+			},
+			Run: func(ctx *common.RuntimeContext) error {
+				if err := ctx.ResolveOwnerRepo(); err != nil {
+					return err
+				}
+				q := url.Values{}
+				if keyword := ctx.Arg("keyword"); keyword != "" {
+					q.Set("keyword", keyword)
+				}
+				env, err := ctx.CallAPIWithQuery("GET", v1RepoPath(ctx)+"/issue_priorities", q)
+				if err != nil {
+					return err
+				}
+				return ctx.Output(env)
+			},
+		},
+		{
+			Name:        "tags",
+			Description: "List issue tags",
+			Flags: []common.Flag{
+				{Name: "keyword", Short: "k", Usage: "Search keyword"},
+				{Name: "only-name", Usage: "Only return tag names and IDs", Bool: true, Default: "false"},
+				{Name: "order-by", Usage: "Order by: updated_on, created_on, issues_count"},
+				{Name: "order-direction", Usage: "Order direction: asc or desc"},
+			},
+			Run: func(ctx *common.RuntimeContext) error {
+				if err := ctx.ResolveOwnerRepo(); err != nil {
+					return err
+				}
+				q := url.Values{}
+				if keyword := ctx.Arg("keyword"); keyword != "" {
+					q.Set("keyword", keyword)
+				}
+				if parseBool(ctx.Arg("only-name")) {
+					q.Set("only_name", "true")
+				}
+				if orderBy := ctx.Arg("order-by"); orderBy != "" {
+					q.Set("order_by", orderBy)
+				}
+				if orderDirection := ctx.Arg("order-direction"); orderDirection != "" {
+					q.Set("order_direction", orderDirection)
+				}
+				env, err := ctx.CallAPIWithQuery("GET", v1RepoPath(ctx)+"/issue_tags", q)
+				if err != nil {
+					return err
+				}
+				return ctx.Output(env)
+			},
+		},
+		{
+			Name:        "statuses",
+			Description: "List issue statuses",
+			Flags: []common.Flag{
+				{Name: "page", Short: "p", Usage: "Page number", Default: "1"},
+				{Name: "limit", Short: "l", Usage: "Items per page", Default: "20"},
+			},
+			Run: func(ctx *common.RuntimeContext) error {
+				if err := ctx.ResolveOwnerRepo(); err != nil {
+					return err
+				}
+				q := url.Values{}
+				q.Set("page", ctx.Arg("page"))
+				q.Set("limit", ctx.Arg("limit"))
+				env, err := ctx.CallAPIWithQuery("GET", v1RepoPath(ctx)+"/issue_statues", q)
+				if err != nil {
+					return err
+				}
+				return ctx.Output(env)
+			},
+		},
 	}
 }
 
