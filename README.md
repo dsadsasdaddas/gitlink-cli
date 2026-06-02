@@ -79,7 +79,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 
 | Category | Capabilities |
 |----------|-------------|
-| 📦 Repo | List, create, fork, delete repositories, view repo info |
+| 📦 Repo | List, create, fork, delete repositories, view repo info, insights, and interactions |
 | 🐛 Issue | Create, update, close, batch close, comment on issues |
 | 🔖 Label | Create, list, update, delete issue labels |
 | 🔀 PR | Create, merge, review pull requests, view changed files |
@@ -195,6 +195,29 @@ gitlink-cli repo +info --owner Gitlink --repo forgeplus
 
 # Read repository README
 gitlink-cli repo +readme --owner Gitlink --repo forgeplus --ref master
+
+# Show language breakdown
+gitlink-cli repo +languages --owner Gitlink --repo forgeplus
+
+# List contributors
+gitlink-cli repo +contributors --owner Gitlink --repo forgeplus
+
+# Show contributor code-line stats for a branch, tag, or commit
+gitlink-cli repo +contributor-stats --owner Gitlink --repo forgeplus --ref master --pass-year 1
+
+# Show repository code stats
+gitlink-cli repo +code-stats --owner Gitlink --repo forgeplus --ref master
+
+# List watchers and stargazers in a time range
+gitlink-cli repo +watchers --owner Gitlink --repo forgeplus --start-at 1714521600 --end-at 1717200000
+gitlink-cli repo +stargazers --owner Gitlink --repo forgeplus --start-at 1714521600 --end-at 1717200000
+
+# Preview and apply repository interaction actions
+gitlink-cli repo +follow --owner Gitlink --repo forgeplus --dry-run
+gitlink-cli repo +follow --owner Gitlink --repo forgeplus
+gitlink-cli repo +unfollow --owner Gitlink --repo forgeplus --project-id 123
+gitlink-cli repo +like --owner Gitlink --repo forgeplus
+gitlink-cli repo +unlike --owner Gitlink --repo forgeplus --project-id 123
 
 # Create a repository
 gitlink-cli repo +create -n my-project -d "Project description"
@@ -587,7 +610,7 @@ See [skills/README.md](skills/README.md) for details.
 | Skill | Description |
 |-------|-------------|
 | `gitlink-shared` | Authentication, global parameters, safety rules, API notes |
-| `gitlink-repo` | Repository operations (create, view, delete, fork, etc.) |
+| `gitlink-repo` | Repository operations (create, view, delete, fork, insights, etc.) |
 | `gitlink-issue` | Issue operations (create, update, close, comment, etc.) |
 | `gitlink-pr` | Pull request operations (create, merge, review, etc.) |
 | `gitlink-member` | Repository member and invite link management |
