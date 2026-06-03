@@ -75,7 +75,7 @@
 ## 为什么选择 gitlink-cli？
 
 - **Agent-Native 设计** — 开箱即用结构化 [Skills](./skills/)，兼容 Claude Code — Agent 零配置即可操作 GitLink
-- **广泛覆盖** — 仓库、Issue、PR、Webhook、成员、分支、Release、CI、Pipeline、组织、搜索、用户等常用工作流均提供高层命令
+- **广泛覆盖** — 仓库、Issue、PR、Webhook、成员、分支、Release、CI、Pipeline、组织、搜索、星标项目、用户等常用工作流均提供高层命令
 - **AI 友好 & 优化** — 每条命令都经过真实 Agent 测试，简洁参数、智能默认值、结构化输出
 - **跨平台** — macOS、Linux、Windows (x64/arm64) 全支持，`npm` 一条命令安装
 - **开源零门槛** — 木兰宽松许可证第2版（MulanPSL-2.0），`npm install` 即用
@@ -98,6 +98,7 @@
 | 🔧 CI | 查看构建、日志、CI/CD 操作 |
 | ⚙️ Pipeline | 运行、查看、启停、删除流水线工作流并查询日志 |
 | 🔍 搜索 | 搜索仓库、用户 |
+| ⭐ 星标项目 | 查看、设置和排序用户星标项目 |
 | 👤 用户 | 查看用户资料和信息 |
 | 📋 项目管理 | Sprint 管理、看板、周报 |
 | 🤖 工作流 | AI 驱动的 Issue 分类、PR Review、Release Notes |
@@ -436,6 +437,19 @@ gitlink-cli search +repos -k "machine learning"
 gitlink-cli search +users -k "zhangsan"
 ```
 
+### 星标项目管理
+
+```bash
+# 查看用户星标项目
+gitlink-cli star +list --login wangyue111
+
+# 预览更新用户星标项目列表
+gitlink-cli star +set --login wangyue111 --project-ids 17,42 --dry-run
+
+# 调整某条星标记录排序；position 越大越靠前
+gitlink-cli star +reorder --login wangyue111 --pinned-id 9 --position 10 --dry-run
+```
+
 ### Raw API
 
 Shortcuts 未覆盖的接口可通过 Raw API 直接调用：
@@ -506,6 +520,7 @@ git push gitlink
 | `gitlink-ci` | CI/CD 操作（构建、日志等） |
 | `gitlink-pipeline` | 流水线工作流操作（运行、日志、启停、删除等） |
 | `gitlink-search` | 搜索功能（仓库、用户等） |
+| `gitlink-star` | 星标项目查看、设置和排序 |
 | `gitlink-user` | 用户管理（个人信息等） |
 | `gitlink-pm` | 项目管理（Sprint、看板、周报等） |
 | `gitlink-workflow` | AI 自动化工作流（Issue 分类、PR Review、Release Notes 等） |
@@ -538,6 +553,7 @@ gitlink-cli/
 │   ├── ci/                   # CI shortcuts
 │   ├── pipeline/             # Pipeline shortcuts
 │   ├── search/               # 搜索 shortcuts
+│   ├── star/                 # 星标项目 shortcuts
 │   ├── user/                 # 用户 shortcuts
 │   └── register.go           # 注册入口
 ├── skills/                   # AI Agent Skills

@@ -75,7 +75,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 ## Why gitlink-cli?
 
 - **Agent-Native Design** — Structured [Skills](./skills/) out of the box, compatible with Claude Code, OpenClaw, and other AI platforms — Agents can operate GitLink with zero extra setup
-- **Wide Coverage** — Repository, Issue, PR, Webhook, Member, Branch, Release, CI, Pipeline, Org, Search, and User workflows are covered by high-level commands
+- **Wide Coverage** — Repository, Issue, PR, Webhook, Member, Branch, Release, CI, Pipeline, Org, Search, Starred Project, and User workflows are covered by high-level commands
 - **AI-Friendly & Optimized** — Every command is tested with real Agents, featuring concise parameters, smart defaults, and structured output
 - **Cross-Platform** — Runs on macOS, Linux, and Windows (x64/arm64), install via `npm install -g @gitlink-ai/cli` in one command, binary auto-downloaded
 - **Open Source, Zero Barriers** — MulanPSL-2.0 license, ready to use, just `npm install`
@@ -99,6 +99,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
 | ⚙️ Pipeline | Run, inspect, enable, disable, delete pipeline workflows and logs |
 | 🔔 Webhook | Manage repo webhooks and test deliveries |
 | 🔍 Search | Search repositories, users |
+| ⭐ Star | List, set, and reorder user starred projects |
 | 👤 User | View user profiles and info |
 | 📋 PM | Sprint management, kanban boards, weekly reports |
 | 🤖 Workflow | AI-powered issue triage, PR review, release notes |
@@ -458,6 +459,19 @@ gitlink-cli search +repos -k "machine learning"
 gitlink-cli search +users -k "zhangsan"
 ```
 
+### Starred Project Management
+
+```bash
+# List starred projects for a user
+gitlink-cli star +list --login wangyue111
+
+# Preview updating the user's starred project list
+gitlink-cli star +set --login wangyue111 --project-ids 17,42 --dry-run
+
+# Reorder one starred project record; larger positions rank higher
+gitlink-cli star +reorder --login wangyue111 --pinned-id 9 --position 10 --dry-run
+```
+
 ### Workflow Agent Commands
 
 `workflow` provides rule-based repository analysis for maintainers and AI Agents. It currently supports:
@@ -627,6 +641,7 @@ See [skills/README.md](skills/README.md) for details.
 | `gitlink-ci` | CI/CD operations (builds, logs, etc.) |
 | `gitlink-pipeline` | Pipeline workflow operations (runs, logs, enable, disable, delete, etc.) |
 | `gitlink-search` | Search (repositories, users, etc.) |
+| `gitlink-star` | Starred project list, set, and reorder operations |
 | `gitlink-org` | Organization management (members, teams, etc.) |
 | `gitlink-user` | User management (profile info, etc.) |
 | `gitlink-pm` | Project management (sprints, kanban, weekly reports, etc.) |
@@ -661,6 +676,7 @@ gitlink-cli/
 │   ├── ci/                   # CI shortcuts
 │   ├── pipeline/             # Pipeline shortcuts
 │   ├── search/               # Search shortcuts
+│   ├── star/                 # Starred project shortcuts
 │   ├── user/                 # User shortcuts
 │   └── register.go           # Registration entry point
 ├── skills/                   # AI Agent Skills

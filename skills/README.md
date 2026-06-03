@@ -100,6 +100,8 @@ skills/
 │       └── search-workflow.md         # 搜索工作流
 ├── gitlink-user/                      # 用户管理
 │   └── SKILL.md                       # 用户操作指南
+├── gitlink-star/                      # 星标项目管理
+│   └── SKILL.md                       # 星标项目查看、设置和排序
 ├── gitlink-org/                       # 组织管理
 │   ├── SKILL.md                       # 组织操作指南
 │   └── examples/
@@ -146,6 +148,7 @@ skills/
 | Skill | 说明 | 常用命令 |
 |-------|------|----------|
 | **gitlink-search** | 搜索功能 | `search +repos`, `search +users` |
+| **gitlink-star** | 星标项目管理 | `star +list`, `star +set`, `star +reorder` |
 | **gitlink-user** | 用户管理 | `user +me`, `user +info` |
 | **gitlink-org** | 组织管理 | `org +list`, `org +info`, `org +members` |
 | **gitlink-ci** | CI/CD | `ci +builds`, `ci +logs` |

@@ -20,6 +20,7 @@ import (
 	"github.com/gitlink-org/gitlink-cli/shortcuts/release"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/repo"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/search"
+	"github.com/gitlink-org/gitlink-cli/shortcuts/star"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/user"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/webhook"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/workflow"
@@ -45,6 +46,7 @@ func RegisterAll(root *cobra.Command, translators ...*i18n.Translator) {
 		"org":       org.Shortcuts(tr),
 		"user":      user.Shortcuts(tr),
 		"search":    search.Shortcuts(tr),
+		"star":      star.Shortcuts(),
 		"ci":        ci.Shortcuts(tr),
 		"compare":   compare.Shortcuts(),
 		"webhook":   webhook.Shortcuts(tr),
@@ -66,6 +68,7 @@ func RegisterAll(root *cobra.Command, translators ...*i18n.Translator) {
 		"org":       tr.T("cmd.org.short"),
 		"user":      tr.T("cmd.user.short"),
 		"search":    tr.T("cmd.search.short"),
+		"star":      "User starred project operations",
 		"ci":        tr.T("cmd.ci.short"),
 		"compare":   "Compare branches, tags, or commits",
 		"webhook":   tr.T("cmd.webhook.short"),
