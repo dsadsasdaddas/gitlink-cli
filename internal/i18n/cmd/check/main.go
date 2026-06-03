@@ -44,6 +44,7 @@ func main() {
 }
 
 func checkLocaleFormat(fix bool) error {
+	// #nosec G703 -- pattern is repo-local and not user-controlled.
 	files, err := filepath.Glob(filepath.Join("internal", "i18n", "locales", "*.json"))
 	if err != nil {
 		return err
