@@ -273,6 +273,22 @@ gitlink-cli member +role --owner Gitlink --repo forgeplus --user-id 101 --role D
 gitlink-cli member +invite-link --owner Gitlink --repo forgeplus --role developer --apply true
 ```
 
+### Todo Request Management
+
+```bash
+# List project transfer requests waiting for the user
+gitlink-cli todo +transfer-list --login wangyue111
+
+# Preview accepting a transfer request
+gitlink-cli todo +transfer-accept --login wangyue111 --id 7 --dry-run
+
+# List project join requests waiting for review
+gitlink-cli todo +join-list --login wangyue111 --page 1 --per-page 20
+
+# Refuse a project join request
+gitlink-cli todo +join-refuse --login wangyue111 --id 11 --dry-run
+```
+
 ### Issue Management
 
 ```bash
@@ -629,6 +645,7 @@ See [skills/README.md](skills/README.md) for details.
 | `gitlink-search` | Search (repositories, users, etc.) |
 | `gitlink-org` | Organization management (members, teams, etc.) |
 | `gitlink-user` | User management (profile info, etc.) |
+| `gitlink-todo` | User todo queues for transfer and join request approvals |
 | `gitlink-pm` | Project management (sprints, kanban, weekly reports, etc.) |
 | `gitlink-workflow` | AI-powered workflows (issue triage, PR review, release notes, etc.) |
 | `gitlink-health` | Project health analysis (PR/Issue metrics aggregation, health reports) |

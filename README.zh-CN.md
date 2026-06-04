@@ -284,6 +284,22 @@ gitlink-cli member +role --owner Gitlink --repo forgeplus --user-id 101 --role D
 gitlink-cli member +invite-link --owner Gitlink --repo forgeplus --role developer --apply true
 ```
 
+### 待办事项审批
+
+```bash
+# 查看等待用户处理的项目迁移申请
+gitlink-cli todo +transfer-list --login wangyue111
+
+# 预览接受项目迁移申请
+gitlink-cli todo +transfer-accept --login wangyue111 --id 7 --dry-run
+
+# 查看等待审批的项目加入申请
+gitlink-cli todo +join-list --login wangyue111 --page 1 --per-page 20
+
+# 预览拒绝项目加入申请
+gitlink-cli todo +join-refuse --login wangyue111 --id 11 --dry-run
+```
+
 ### Issue 管理
 
 ```bash
@@ -507,6 +523,7 @@ git push gitlink
 | `gitlink-pipeline` | 流水线工作流操作（运行、日志、启停、删除等） |
 | `gitlink-search` | 搜索功能（仓库、用户等） |
 | `gitlink-user` | 用户管理（个人信息等） |
+| `gitlink-todo` | 待办事项审批（项目迁移、加入申请） |
 | `gitlink-pm` | 项目管理（Sprint、看板、周报等） |
 | `gitlink-workflow` | AI 自动化工作流（Issue 分类、PR Review、Release Notes 等） |
 
