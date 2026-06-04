@@ -234,6 +234,22 @@ gitlink-cli repo +create -n my-project -d "Project description"
 gitlink-cli repo +fork --owner Gitlink --repo forgeplus
 ```
 
+### Mirror Repository Operations
+
+```bash
+# Preview creating a mirror repository from a remote Git URL
+gitlink-cli mirror +create --user-id 42 --name demo-mirror \
+  --repository-name demo-mirror --clone-addr https://example.com/demo.git --dry-run
+
+# Create a private mirror source with credentials
+gitlink-cli mirror +create --user-id 42 --name private-mirror \
+  --repository-name private-mirror --clone-addr https://example.com/private.git \
+  --auth-username bot --auth-password <token> --private
+
+# Trigger manual mirror synchronization
+gitlink-cli mirror +sync --repo-id 99 --dry-run
+```
+
 ### Webhook Management
 
 ```bash
@@ -619,6 +635,7 @@ See [skills/README.md](skills/README.md) for details.
 |-------|-------------|
 | `gitlink-shared` | Authentication, global parameters, safety rules, API notes |
 | `gitlink-repo` | Repository operations (create, view, delete, fork, insights, etc.) |
+| `gitlink-mirror` | Mirror repository creation and synchronization |
 | `gitlink-issue` | Issue operations (create, update, close, comment, etc.) |
 | `gitlink-pr` | Pull request operations (create, merge, review, etc.) |
 | `gitlink-member` | Repository member and invite link management |

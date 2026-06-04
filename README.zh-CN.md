@@ -245,6 +245,22 @@ gitlink-cli repo +create -n my-project -d "项目描述"
 gitlink-cli repo +fork --owner Gitlink --repo forgeplus
 ```
 
+### 镜像仓库操作
+
+```bash
+# 预览从远端 Git 地址创建镜像仓库
+gitlink-cli mirror +create --user-id 42 --name demo-mirror \
+  --repository-name demo-mirror --clone-addr https://example.com/demo.git --dry-run
+
+# 使用凭据创建私有源镜像仓库
+gitlink-cli mirror +create --user-id 42 --name private-mirror \
+  --repository-name private-mirror --clone-addr https://example.com/private.git \
+  --auth-username bot --auth-password <token> --private
+
+# 手动触发镜像同步
+gitlink-cli mirror +sync --repo-id 99 --dry-run
+```
+
 ### Webhook 管理
 
 ```bash
@@ -498,6 +514,7 @@ git push gitlink
 |-------|------|
 | `gitlink-shared` | 认证、全局参数、安全规则、API 注意事项 |
 | `gitlink-repo` | 仓库操作（创建、查看、删除、Fork、洞察数据等） |
+| `gitlink-mirror` | 镜像仓库创建与同步 |
 | `gitlink-issue` | Issue 操作（创建、更新、关闭、评论等） |
 | `gitlink-pr` | Pull Request 操作（创建、合并、Review 等） |
 | `gitlink-member` | 仓库成员与邀请链接管理 |
