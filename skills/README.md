@@ -153,6 +153,7 @@ skills/
 | **gitlink-pm** | 项目管理 | 通过 Raw API 访问 |
 | **gitlink-workflow** | AI 工作流 | Issue 分类、PR Review、Release Notes |
 | **gitlink-health** | 开源项目健康度 | 详情见SKILL.md |
+| **gitlink-gatekeeper** | Policy-as-Code PR 合并门禁：按 `gatekeeper.yaml` 策略算 0-100 评分卡 + 三态裁决（PASS/REQUEST_CHANGES/COMMENT），默认 dry-run、绝不自动合并 | `pr +view/+files/+diff`, `pr +comment`, `label +create` |
 
 ---
 

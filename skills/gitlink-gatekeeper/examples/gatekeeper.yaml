@@ -1,0 +1,50 @@
+# gatekeeper.yaml — 默认策略（均衡基线，等同 SSOT 第2节内置默认策略）
+
+version: 1                      # 策略 schema 版本，整数，当前为 1
+
+# —— 加权评分维度，5 项权重之和必须 = 100 ——
+weights:
+  review_findings: 40           # AI 代码审查发现（按严重度扣分）
+  test_coverage:   20           # 改动的源码是否伴随测试
+  pr_hygiene:      15           # PR 描述 / 关联 Issue / 体量
+  commit_quality:  15           # commit 是否符合 Conventional Commits
+  ci_status:       10           # CI 是否通过
+
+# —— 硬门禁：任一命中 → 直接 REQUEST_CHANGES（无视总分）——
+hard_gates:
+  forbid_blocker_findings: true   # 出现 blocker 级发现即拦截
+  require_ci_pass: true           # CI 未通过即拦截
+  require_tests_for_src_changes: true  # 改了源码却没加测试即拦截
+  require_linked_issue: false     # PR 是否必须关联 Issue
+  max_changed_files: 80           # 超过该改动文件数即拦截（0 表示不限）
+
+# —— 严重度 → 扣分（用于 review_findings 维度）——
+severity_penalty:
+  blocker: 100                  # 单条即清零本维度，且触发硬门禁
+  major:   25
+  minor:   5
+  nit:     1
+
+# —— 最终 0-100 总分 → 裁决阈值 ——
+thresholds:
+  pass: 85                      # 总分 ≥ pass 且无硬门禁失败 → PASS
+  request_changes: 60           # 总分 < request_changes → REQUEST_CHANGES
+                                # 介于两者之间 → COMMENT
+
+# —— 各裁决对应回写的标签（依赖 gitlink-cli label）——
+labels:
+  pass: "gatekeeper:pass"
+  request_changes: "gatekeeper:needs-changes"
+  comment: "gatekeeper:review"
+
+# —— 源码判定：用于 test_coverage / require_tests_for_src_changes ——
+source_globs: ["**/*.go", "**/*.py", "**/*.js", "**/*.ts", "**/*.rs", "**/*.java"]
+test_globs:   ["**/*_test.go", "**/test_*.py", "**/*.test.*", "**/*.spec.*", "tests/**"]
+
+# —— 行为开关 ——
+behavior:
+  dry_run_default: true         # 默认只预览，不写任何东西
+  post_comment: true            # 把评分卡作为评论回写 PR
+  apply_label: true             # 按裁决打标签
+  auto_merge: false             # 仅当 true 且裁决=PASS 且显式 --apply 时才合并
+  merge_method: squash          # merge | rebase | squash
