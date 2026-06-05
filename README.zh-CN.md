@@ -245,6 +245,19 @@ gitlink-cli repo +create -n my-project -d "项目描述"
 gitlink-cli repo +fork --owner Gitlink --repo forgeplus
 ```
 
+### 项目访问自助操作
+
+```bash
+# 预览使用邀请码/申请码申请加入项目
+gitlink-cli access +join --code <invite-code> --role developer --dry-run
+
+# 提交项目加入申请
+gitlink-cli access +join --code <invite-code> --role reporter
+
+# 预览退出当前项目
+gitlink-cli access +quit --owner Gitlink --repo forgeplus --dry-run
+```
+
 ### Webhook 管理
 
 ```bash
@@ -498,6 +511,7 @@ git push gitlink
 |-------|------|
 | `gitlink-shared` | 认证、全局参数、安全规则、API 注意事项 |
 | `gitlink-repo` | 仓库操作（创建、查看、删除、Fork、洞察数据等） |
+| `gitlink-access` | 项目加入申请与退出自助操作 |
 | `gitlink-issue` | Issue 操作（创建、更新、关闭、评论等） |
 | `gitlink-pr` | Pull Request 操作（创建、合并、Review 等） |
 | `gitlink-member` | 仓库成员与邀请链接管理 |

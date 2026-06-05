@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/gitlink-org/gitlink-cli/internal/i18n"
+	"github.com/gitlink-org/gitlink-cli/shortcuts/access"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/branch"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/ci"
 	"github.com/gitlink-org/gitlink-cli/shortcuts/common"
@@ -32,6 +33,7 @@ func RegisterAll(root *cobra.Command, translators ...*i18n.Translator) {
 		tr = translators[0]
 	}
 	groups := map[string][]*common.Shortcut{
+		"access":    access.Shortcuts(),
 		"repo":      repo.Shortcuts(tr),
 		"issue":     issue.Shortcuts(tr),
 		"label":     label.Shortcuts(),
@@ -53,6 +55,7 @@ func RegisterAll(root *cobra.Command, translators ...*i18n.Translator) {
 	}
 
 	descriptions := map[string]string{
+		"access":    "Self-service project access operations",
 		"repo":      tr.T("cmd.repo.short"),
 		"issue":     tr.T("cmd.issue.short"),
 		"label":     "Issue label operations",

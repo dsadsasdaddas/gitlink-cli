@@ -234,6 +234,19 @@ gitlink-cli repo +create -n my-project -d "Project description"
 gitlink-cli repo +fork --owner Gitlink --repo forgeplus
 ```
 
+### Project Access Operations
+
+```bash
+# Preview applying to join a project with an invitation/application code
+gitlink-cli access +join --code <invite-code> --role developer --dry-run
+
+# Submit a project join application
+gitlink-cli access +join --code <invite-code> --role reporter
+
+# Preview quitting the current project
+gitlink-cli access +quit --owner Gitlink --repo forgeplus --dry-run
+```
+
 ### Webhook Management
 
 ```bash
@@ -619,6 +632,7 @@ See [skills/README.md](skills/README.md) for details.
 |-------|-------------|
 | `gitlink-shared` | Authentication, global parameters, safety rules, API notes |
 | `gitlink-repo` | Repository operations (create, view, delete, fork, insights, etc.) |
+| `gitlink-access` | Self-service project join and quit operations |
 | `gitlink-issue` | Issue operations (create, update, close, comment, etc.) |
 | `gitlink-pr` | Pull request operations (create, merge, review, etc.) |
 | `gitlink-member` | Repository member and invite link management |

@@ -69,6 +69,7 @@ skills/
 │   └── examples/
 │       └── auth-workflow.md           # 认证工作流示例
 ├── gitlink-repo/                      # 仓库管理
+├── gitlink-access/                    # 项目访问自助操作
 │   ├── SKILL.md                       # 仓库操作指南
 │   ├── REFERENCE.md                   # 仓库 API 参考
 │   └── examples/
@@ -135,6 +136,7 @@ skills/
 |-------|------|----------|
 | **gitlink-shared** | 认证、全局参数、API 参考、安全规则、分支约定 | `auth login`, `auth status` |
 | **gitlink-repo** | 仓库管理与洞察 | `repo +list`, `repo +info`, `repo +languages`, `repo +contributors`, `repo +code-stats`, `repo +follow`, `repo +like` |
+| **gitlink-access** | 项目访问自助操作 | `access +join`, `access +quit` |
 | **gitlink-issue** | Issue 管理 | `issue +create`, `issue +list`, `issue +view`, `issue +close`, `issue +batch-close` |
 | **gitlink-pr** | Pull Request | `pr +list`, `pr +create`, `pr +view`, `pr +merge`, `pr +versions`, `pr +version-diff`, `pr +reviews`, `pr +review` |
 | **gitlink-member** | 仓库成员管理 | `member +list`, `member +add`, `member +batch-add`, `member +role`, `member +invite-link` |
@@ -241,6 +243,7 @@ gitlink-cli org +info -i Gitlink
 
 **仓库操作**:
 - [gitlink-repo/SKILL.md](gitlink-repo/SKILL.md) - 仓库命令
+- [gitlink-access/SKILL.md](gitlink-access/SKILL.md) - 项目访问自助命令
 - [gitlink-branch/SKILL.md](gitlink-branch/SKILL.md) - 分支命令
 - [gitlink-repo/examples/repo-workflow.md](gitlink-repo/examples/repo-workflow.md) - 完整工作流
 
