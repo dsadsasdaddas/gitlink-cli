@@ -62,6 +62,14 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
   <a href="https://www.gitlink.org.cn/puygob236" title="Jiachen Li"><img src="https://www.gitlink.org.cn/images/avatars/User/149183?t=1778815174" width="40" height="40" alt="puygob236" style="border-radius: 50%;"></a>
   <br><sub><a href="https://www.gitlink.org.cn/puygob236">puygob236</a></sub>
 </div>
+<div align="center">
+  <a href="https://www.gitlink.org.cn/co63oc" title="co63oc"><img src="https://www.gitlink.org.cn/system/lets/letter_avatars/2/C/205_201_141/120.png" width="40" height="40" alt="co63oc" style="border-radius: 50%;"></a>
+  <br><sub><a href="https://www.gitlink.org.cn/co63oc">co63oc</a></sub>
+</div>
+<div align="center">
+  <a href="https://www.gitlink.org.cn/lindiwen23" title="lindiwen23"><img src="https://www.gitlink.org.cn/images/avatars/User/141609?t=1748270628" width="40" height="40" alt="lindiwen23" style="border-radius: 50%;"></a>
+  <br><sub><a href="https://www.gitlink.org.cn/lindiwen23">lindiwen23</a></sub>
+</div>
 </div>
 
 ## Why gitlink-cli?
