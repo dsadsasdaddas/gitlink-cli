@@ -35,7 +35,7 @@ The official [GitLink](https://www.gitlink.org.cn) CLI tool — built for humans
   <br><sub><a href="https://www.gitlink.org.cn/mengcheng">mengcheng</a></sub>
 </div>
 <div align="center">
-  <a href="https://www.gitlink.org.cn/muel" title="赵奕程"><img src="https://www.gitlink.org.cn/system/lets/letter_avatars/2/Z/144_206_212/120.png" width="40" height="40" alt="muel" style="border-radius: 50%;"></a>
+  <a href="https://www.gitlink.org.cn/muel" title="赵奕程"><img src="https://www.gitlink.org.cn/images/avatars/User/149182?t=1779603476" width="40" height="40" alt="muel" style="border-radius: 50%;"></a>
   <br><sub><a href="https://www.gitlink.org.cn/muel">muel</a></sub>
 </div>
 <div align="center">
