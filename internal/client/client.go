@@ -42,19 +42,21 @@ func New() (*Client, error) {
 }
 
 func (c *Client) Do(method, path string, body interface{}, query url.Values) (*output.Envelope, error) {
+	path = normalizeAPIPath(c.BaseURL, path)
+
 	// Append .json suffix if not already present (GitLink API convention)
 	// Handle paths that may already contain query strings (e.g., /path?key=val)
 	if idx := strings.Index(path, "?"); idx != -1 {
 		basePath := path[:idx]
 		queryStr := path[idx:]
-		if !strings.HasSuffix(basePath, ".json") {
+		if shouldAppendJSONSuffix(basePath) {
 			path = basePath + ".json" + queryStr
 		}
-	} else if !strings.HasSuffix(path, ".json") {
+	} else if shouldAppendJSONSuffix(path) {
 		path += ".json"
 	}
 	fullURL := c.BaseURL + path
-	if query != nil && len(query) > 0 {
+	if len(query) > 0 {
 		sep := "?"
 		if strings.Contains(fullURL, "?") {
 			sep = "&"
@@ -156,6 +158,31 @@ func (c *Client) Do(method, path string, body interface{}, query url.Values) (*o
 	}
 
 	return output.SuccessEnvelope(raw, meta), nil
+}
+
+func shouldAppendJSONSuffix(path string) bool {
+	if strings.HasSuffix(path, ".json") {
+		return false
+	}
+	parts := strings.Split(strings.Trim(path, "/"), "/")
+	for i, part := range parts {
+		if part == "raw" && i >= 2 && i+2 < len(parts) {
+			return false
+		}
+	}
+	return true
+}
+
+func normalizeAPIPath(baseURL, path string) string {
+	if strings.HasSuffix(strings.TrimRight(baseURL, "/"), "/api") {
+		switch {
+		case path == "/api":
+			return ""
+		case strings.HasPrefix(path, "/api/"):
+			return strings.TrimPrefix(path, "/api")
+		}
+	}
+	return path
 }
 
 func (c *Client) Get(path string, query url.Values) (*output.Envelope, error) {

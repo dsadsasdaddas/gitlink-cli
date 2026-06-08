@@ -27,12 +27,20 @@ metadata:
 | `issue +close` | 关闭 Issue | 是 |
 | `issue +batch-close` | 批量关闭 Issue，支持 `--dry-run` 预览 | 是（dry-run 不写入） |
 | `issue +comment` | 添加评论 | 是 |
+| `issue +assigners` | 查询 Issue 负责人列表 | 否（公开项目） |
+| `issue +authors` | 查询 Issue 发布人列表 | 否（公开项目） |
+| `issue +statuses` | 查询 Issue 状态列表 | 否（公开项目） |
+| `issue +tags` | 查询 Issue 标签列表 | 否（公开项目） |
+| `issue +priorities` | 查询 Issue 优先级列表 | 否（公开项目） |
 
 ## 使用示例
 
 ```bash
 # 列出 Issue
 gitlink-cli issue +list --owner Gitlink --repo forgeplus --state open
+
+# 搜索并排序 Issue
+gitlink-cli issue +list --owner Gitlink --repo forgeplus --state open --keyword 登录 --sort-by issues.updated_on --sort-direction desc
 
 # 创建 Issue
 gitlink-cli issue +create --owner myuser --repo myrepo --title "Bug: 登录失败" --body "复现步骤：..."
@@ -54,6 +62,12 @@ gitlink-cli issue +batch-close --owner myuser --repo myrepo --from issues.csv
 
 # 添加评论
 gitlink-cli issue +comment --number 4 --body "已修复，请验证"
+
+# 查询 Issue 负责人
+gitlink-cli issue +assigners --owner Gitlink --repo forgeplus --keyword alice
+
+# 查询 Issue 发布人
+gitlink-cli issue +authors --owner Gitlink --repo forgeplus --keyword bob
 ```
 
 ## Raw API 补充
@@ -71,15 +85,23 @@ gitlink-cli api POST /:owner/:repo/issues/series_update --body '{"ids":[1,2,3],"
 | gitlink-cli 参数 | GitLink API 字段 | 说明 |
 |------------------|-----------------|------|
 | `--number` / `-n` | `project_issues_index` | Issue 编号（网页 URL 中的序号） |
+| `--id` / `-i` | `project_issues_index` | `--number` 的兼容别名，不是数据库内部 ID |
 | `--title` | `subject` | Issue 标题 |
 | `--body` | `description` | Issue 描述 |
 | `--assignee` | `assigned_to_id` | 指派人 ID |
 | `--milestone` | `fixed_version_id` | 里程碑 ID |
 | `--state` | `status_id` | 状态（open=1，closed=5，也可直接传数字 ID） |
+| `--priority-id` | `priority_id` | 优先级 ID |
+| `--tag-ids` / `--label` | `issue_tag_ids` | Issue 标签 ID 数组 |
+| `--assigner-ids` | `assigner_ids` | 负责人 ID 数组 |
+| `--branch` | `branch_name` | 关联分支 |
+| `--start-date` | `start_date` | 开始日期 |
+| `--due-date` | `due_date` | 截止日期 |
 
 ## API 注意事项
 
 - **Issue 编号（`--number`）是网页 URL 中看到的序号**（如 `issues/4` 中的 `4`），不是数据库内部 ID
+- `--id` / `-i` 仅作为 `--number` / `-n` 的兼容别名，传入的仍然是网页 URL 中的 Issue 编号
 - **批量关闭使用 `--numbers`，同样传网页 URL 中的 Issue 编号**，不是数据库内部 ID
 - Issue 操作使用 v1 API（`/api/v1/`），支持按 Issue 编号查询和操作
 - **创建 Issue 时 CLI 会自动设置 `status_id: 1`（新增）和 `priority_id: 2`（正常）**

@@ -34,7 +34,7 @@ gitlink-cli auth logout
 
 - GitLink Token 有效期 **7 天**，过期需重新登录
 - Token 存储在 OS Keychain（macOS Keychain / Linux Secret Service / Windows Credential Manager）
-- Fallback 存储：`~/.config/gitlink-cli/credentials`
+- Fallback 存储：`$GITLINK_CONFIG_DIR/credentials`（未设置时为 `~/.config/gitlink-cli/credentials`）
 
 ### 认证错误处理
 
@@ -91,6 +91,7 @@ gitlink-cli auth login
 |------|------|------|----------|
 | Shortcuts | `gitlink-cli <domain> +<verb>` | `gitlink-cli repo +info` | 高频操作，推荐优先使用 |
 | Raw API | `gitlink-cli api <METHOD> <PATH>` | `gitlink-cli api GET /users/me` | Shortcuts 未覆盖的接口 |
+| Raw API 批处理 | `gitlink-cli api --batch-file <file>` | `gitlink-cli api --batch-file plan.json --dry-run` | 对未封装接口做可审计的批量自动化 |
 
 ## GitLink API 注意事项
 

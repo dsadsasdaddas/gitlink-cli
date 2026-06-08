@@ -83,6 +83,8 @@ skills/
 │   ├── REFERENCE.md                   # PR API 参考
 │   └── examples/
 │       └── pr-workflow.md             # PR 工作流
+├── gitlink-member/                    # 仓库成员管理
+│   └── SKILL.md                       # 成员与邀请链接操作指南
 ├── gitlink-branch/                    # 分支管理
 │   ├── SKILL.md                       # 分支操作指南
 │   └── examples/
@@ -106,8 +108,19 @@ skills/
 │   ├── SKILL.md                       # CI 操作指南
 │   └── examples/
 │       └── ci-workflow.md             # CI 工作流
+├── gitlink-pipeline/                  # 流水线工作流
+│   └── SKILL.md                       # Pipeline 操作指南
 ├── gitlink-pm/                        # 项目管理
 │   └── SKILL.md                       # PM 操作指南
+├── gitlink-health/                    # 项目健康度分析
+│   ├── SKILL.md                       # 健康度分析指南
+│   ├── data/
+│   │   ├── .gitignore                 # 忽略 *.db 文件
+│   │   └── .gitkeep                   # 占位文件
+│   ├── references/
+│   │   └── queries.md                 # SQL 查询参考
+│   └── asset/
+│       └── health_report_template.md  # 报告模板
 └── gitlink-workflow/                  # AI 自动化工作流
     └── SKILL.md                       # 工作流模板（Issue 分类、PR Review、Release Notes）
 ```
@@ -121,9 +134,10 @@ skills/
 | Skill | 说明 | 常用命令 |
 |-------|------|----------|
 | **gitlink-shared** | 认证、全局参数、API 参考、安全规则、分支约定 | `auth login`, `auth status` |
-| **gitlink-repo** | 仓库管理 | `repo +list`, `repo +create`, `repo +info`, `repo +fork` |
+| **gitlink-repo** | 仓库管理与洞察 | `repo +list`, `repo +info`, `repo +languages`, `repo +contributors`, `repo +code-stats`, `repo +follow`, `repo +like` |
 | **gitlink-issue** | Issue 管理 | `issue +create`, `issue +list`, `issue +view`, `issue +close`, `issue +batch-close` |
-| **gitlink-pr** | Pull Request | `pr +list`, `pr +create`, `pr +view`, `pr +merge`, `pr +review` |
+| **gitlink-pr** | Pull Request | `pr +list`, `pr +create`, `pr +view`, `pr +merge`, `pr +versions`, `pr +version-diff`, `pr +reviews`, `pr +review` |
+| **gitlink-member** | 仓库成员管理 | `member +list`, `member +add`, `member +batch-add`, `member +role`, `member +invite-link` |
 | **gitlink-branch** | 分支管理 | `branch +list`, `branch +create`, `branch +delete`, `branch +protect` |
 | **gitlink-release** | 版本发布 | `release +list`, `release +create`, `release +view` |
 
@@ -135,8 +149,10 @@ skills/
 | **gitlink-user** | 用户管理 | `user +me`, `user +info` |
 | **gitlink-org** | 组织管理 | `org +list`, `org +info`, `org +members` |
 | **gitlink-ci** | CI/CD | `ci +builds`, `ci +logs` |
+| **gitlink-pipeline** | 流水线工作流 | `pipeline +runs`, `pipeline +run`, `pipeline +logs` |
 | **gitlink-pm** | 项目管理 | 通过 Raw API 访问 |
 | **gitlink-workflow** | AI 工作流 | Issue 分类、PR Review、Release Notes |
+| **gitlink-health** | 开源项目健康度 | 详情见SKILL.md |
 
 ---
 
@@ -235,6 +251,7 @@ gitlink-cli org +info -i Gitlink
 
 **发布和搜索**:
 - [gitlink-release/SKILL.md](gitlink-release/SKILL.md) - Release 命令
+- [gitlink-pipeline/SKILL.md](gitlink-pipeline/SKILL.md) - Pipeline 命令
 - [gitlink-search/SKILL.md](gitlink-search/SKILL.md) - 搜索命令
 
 **组织和用户**:
